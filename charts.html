@@ -7,7 +7,7 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-  <script src="https://unpkg.com/recharts@2.15.0/umd/Recharts.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -62,18 +62,6 @@
       box-shadow: 0 8px 32px rgba(0,0,0,0.4);
     }
 
-    /* Recharts custom styles */
-    .recharts-cartesian-grid-horizontal line,
-    .recharts-cartesian-grid-vertical line {
-      stroke: #1E2035 !important;
-    }
-    .recharts-text {
-      fill: #8B8C9E !important;
-      font-family: 'Inter', sans-serif !important;
-      font-size: 12px !important;
-    }
-    .recharts-tooltip-wrapper { outline: none; }
-
     .nav-item {
       transition: all 0.2s ease;
     }
@@ -101,16 +89,18 @@
       font-weight: 600;
     }
 
-    /* Animated number */
     @keyframes countUp {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .count-up { animation: countUp 0.5s ease forwards; }
 
-    /* Table row hover */
     .data-row:hover {
       background: rgba(223,107,51,0.05);
+    }
+
+    canvas {
+      max-width: 100%;
     }
   </style>
 </head>
@@ -152,7 +142,7 @@
         <i data-lucide="users" class="w-5 h-5"></i>
         <span class="font-inter text-sm">Customers</span>
       </a>
-      <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-text-secondary">
+      <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-text-secondary" style="background:rgba(223,107,51,0.1); border-color:rgba(223,107,51,0.3);">
         <i data-lucide="bar-chart-3" class="w-5 h-5" style="color:#DF6B33;"></i>
         <span class="font-inter text-sm" style="color:#DF6B33;">Analytics</span>
       </a>
@@ -212,7 +202,7 @@
       <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary hover:bg-white/5"><i data-lucide="shopping-cart" class="w-5 h-5"></i> Orders</a>
       <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary hover:bg-white/5"><i data-lucide="package" class="w-5 h-5"></i> Products</a>
       <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary hover:bg-white/5"><i data-lucide="users" class="w-5 h-5"></i> Customers</a>
-      <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl" style="color:#DF6B33;"><i data-lucide="bar-chart-3" class="w-5 h-5"></i> Analytics</a>
+      <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl" style="color:#DF6B33; background:rgba(223,107,51,0.1);"><i data-lucide="bar-chart-3" class="w-5 h-5"></i> Analytics</a>
       <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary hover:bg-white/5"><i data-lucide="message-circle" class="w-5 h-5"></i> Reviews</a>
       <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary hover:bg-white/5"><i data-lucide="settings" class="w-5 h-5"></i> Settings</a>
     </nav>
@@ -228,7 +218,6 @@
         <p class="font-inter text-sm text-text-secondary mt-1">E-Commerce Performance Dashboard — May 2026</p>
       </div>
       <div class="flex items-center gap-3">
-        <!-- Period Selector -->
         <div class="relative">
           <select class="appearance-none bg-[#111220] border border-[#1E2035] rounded-xl px-4 py-2.5 pr-10 font-inter text-sm text-text-primary cursor-pointer hover:border-primary transition-colors">
             <option>May 2026</option>
@@ -238,7 +227,6 @@
           </select>
           <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none"></i>
         </div>
-        <!-- Export -->
         <button class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white font-inter text-sm font-medium px-4 py-2.5 rounded-xl transition-all" style="box-shadow: 0 0 16px rgba(223,107,51,0.3);">
           <i data-lucide="download" class="w-4 h-4"></i>
           <span>Export</span>
@@ -314,7 +302,7 @@
               <button class="font-inter text-xs px-3 py-1.5 rounded-lg text-text-muted hover:text-text-primary transition-colors">Target</button>
             </div>
           </div>
-          <div id="revenueChart"></div>
+          <canvas id="revenueChart"></canvas>
         </div>
 
         <!-- Category Donut -->
@@ -323,7 +311,7 @@
             <h3 class="font-poppins font-bold text-base text-text-primary">Revenue by Category</h3>
             <p class="font-inter text-xs text-text-muted mt-0.5">Product category breakdown</p>
           </div>
-          <div id="donutChart"></div>
+          <canvas id="donutChart"></canvas>
           <div class="mt-4 space-y-2">
             <div class="flex items-center justify-between"><div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-[#DF6B33]"></div><span class="font-inter text-xs text-text-secondary">Electronics</span></div><span class="font-inter text-xs font-semibold text-text-primary">38%</span></div>
             <div class="flex items-center justify-between"><div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-[#8B5CF6]"></div><span class="font-inter text-xs text-text-secondary">Fashion</span></div><span class="font-inter text-xs font-semibold text-text-primary">24%</span></div>
@@ -344,7 +332,7 @@
               <p class="font-inter text-xs text-text-muted mt-0.5">Daily orders — last 30 days</p>
             </div>
           </div>
-          <div id="areaChart"></div>
+          <canvas id="areaChart"></canvas>
         </div>
 
         <!-- Top Products Table -->
@@ -537,7 +525,7 @@
               <p class="font-inter text-xs text-text-muted mt-0.5">Monthly comparison — last 12 months</p>
             </div>
           </div>
-          <div id="profitLossChart"></div>
+          <canvas id="profitLossChart"></canvas>
         </div>
 
         <div class="glass-card rounded-2xl p-5 border border-[#1E2035]">
@@ -545,7 +533,7 @@
             <h3 class="font-poppins font-bold text-base text-text-primary">Cost Breakdown</h3>
             <p class="font-inter text-xs text-text-muted mt-0.5">Expenses by category</p>
           </div>
-          <div id="costDonutChart"></div>
+          <canvas id="costDonutChart"></canvas>
           <div class="mt-4 space-y-2">
             <div class="flex items-center justify-between"><div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-[#DF6B33]"></div><span class="font-inter text-xs text-text-secondary">COGS</span></div><span class="font-inter text-xs font-semibold text-text-primary">45%</span></div>
             <div class="flex items-center justify-between"><div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-[#8B5CF6]"></div><span class="font-inter text-xs text-text-secondary">Marketing</span></div><span class="font-inter text-xs font-semibold text-text-primary">22%</span></div>
@@ -675,7 +663,7 @@
               <button class="font-inter text-xs px-3 py-1.5 rounded-lg text-text-muted hover:text-text-primary transition-colors">Organic</button>
             </div>
           </div>
-          <div id="marketingChart"></div>
+          <canvas id="marketingChart"></canvas>
         </div>
 
         <!-- Channel Breakdown -->
@@ -684,7 +672,7 @@
             <h3 class="font-poppins font-bold text-base text-text-primary">Traffic Sources</h3>
             <p class="font-inter text-xs text-text-muted mt-0.5">Channel performance breakdown</p>
           </div>
-          <div id="trafficChart"></div>
+          <canvas id="trafficChart"></canvas>
           <div class="mt-4 space-y-3">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-[#4285F4]"></div><span class="font-inter text-xs text-text-secondary">Google Ads</span></div>
@@ -782,236 +770,408 @@
   <script>
     lucide.createIcons();
 
+    // Common Chart.js defaults for dark theme
+    Chart.defaults.color = '#8B8C9E';
+    Chart.defaults.borderColor = '#1E2035';
+    Chart.defaults.font.family = 'Inter, sans-serif';
+    Chart.defaults.font.size = 12;
+
+    // Mock Data
+    const months = ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'];
+    const revenueData = {
+      labels: months,
+      target:  [50000, 52000, 55000, 58000, 62000, 75000, 85000, 70000, 72000, 75000, 78000, 80000],
+      revenue: [48500, 55200, 61800, 58300, 71200, 89400, 98200, 62100, 67800, 74500, 81200, 84732],
+    };
+
+    const dailyData = Array.from({ length: 30 }, (_, i) => ({
+      day: `Day ${i + 1}`,
+      orders: Math.floor(Math.random() * 200 + 280),
+      revenue: Math.floor(Math.random() * 15000 + 20000),
+    }));
+
+    const profitData = {
+      labels: months,
+      revenue: [48500, 55200, 61800, 58300, 71200, 89400, 98200, 62100, 67800, 74500, 81200, 84732],
+      cost:   [32500, 35800, 38900, 37100, 44800, 55100, 59200, 40200, 43100, 46900, 50200, 51892],
+      profit: [16000, 19400, 22900, 21200, 26400, 34300, 39000, 21900, 24700, 27600, 31000, 32840],
+    };
+
+    const marketingMonths = ['Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'];
+    const marketingData = {
+      labels: marketingMonths,
+      impressions: [420000, 380000, 395000, 440000, 510000, 580000],
+      clicks:     [21000,  19000,  19700,  22800,  26500,  30400],
+    };
+
+    const catColors  = ['#DF6B33', '#8B5CF6', '#06B6D4', '#10B981', '#F59E0B'];
+    const costColors = ['#DF6B33', '#8B5CF6', '#06B6D4', '#10B981'];
+    const trafficColors = ['#4285F4', '#1877F2', '#E4405F', '#1DA1F2', '#10B981'];
+
+    const tooltipDefaults = {
+      backgroundColor: 'rgba(17,18,32,0.95)',
+      borderColor: '#1E2035',
+      borderWidth: 1,
+      titleColor: '#F0F0F0',
+      bodyColor: '#8B8C9E',
+      padding: 12,
+      cornerRadius: 12,
+    };
+
+    // Chart instances
+    let revenueChartInstance, donutChartInstance, areaChartInstance;
+    let profitLossChartInstance, costDonutChartInstance;
+    let marketingChartInstance, trafficChartInstance;
+
+    function destroyChart(instance) {
+      if (instance) { instance.destroy(); instance = null; }
+    }
+
+    function initSalesCharts() {
+      // Revenue Bar + Line
+      if (!revenueChartInstance) {
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        revenueChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: revenueData.labels,
+            datasets: [
+              {
+                label: 'Target',
+                data: revenueData.target,
+                backgroundColor: 'rgba(223,107,51,0.15)',
+                borderRadius: 4,
+                borderSkipped: false,
+                barPercentage: 0.6,
+              },
+              {
+                label: 'Revenue',
+                data: revenueData.revenue,
+                backgroundColor: '#DF6B33',
+                borderRadius: 4,
+                borderSkipped: false,
+                barPercentage: 0.6,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 2.2,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+              legend: { display: false },
+              tooltip: { ...tooltipDefaults, callbacks: {
+                label: ctx => `${ctx.dataset.label}: $${ctx.parsed.y.toLocaleString()}`,
+              }},
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: '#8B8C9E' },
+              },
+              y: {
+                grid: { color: '#1E2035', drawBorder: false },
+                ticks: { color: '#8B8C9E', callback: v => `$${v / 1000}k` },
+              },
+            },
+          },
+        });
+      }
+
+      // Category Donut
+      if (!donutChartInstance) {
+        const ctx = document.getElementById('donutChart').getContext('2d');
+        donutChartInstance = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Electronics', 'Fashion', 'Home & Living', 'Beauty', 'Sports'],
+            datasets: [{
+              data: [38, 24, 18, 12, 8],
+              backgroundColor: catColors,
+              borderWidth: 0,
+              hoverOffset: 6,
+            }],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 1.4,
+            cutout: '60%',
+            plugins: {
+              legend: { display: false },
+              tooltip: { ...tooltipDefaults, callbacks: {
+                label: ctx => ` ${ctx.label}: ${ctx.parsed}%`,
+              }},
+            },
+          },
+        });
+      }
+
+      // Area Chart
+      if (!areaChartInstance) {
+        const ctx = document.getElementById('areaChart').getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 280);
+        gradient.addColorStop(0, 'rgba(6,182,212,0.25)');
+        gradient.addColorStop(1, 'rgba(6,182,212,0.01)');
+        areaChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: dailyData.map(d => d.day),
+            datasets: [{
+              label: 'Revenue',
+              data: dailyData.map(d => d.revenue),
+              borderColor: '#06B6D4',
+              backgroundColor: gradient,
+              borderWidth: 2,
+              fill: true,
+              tension: 0.4,
+              pointRadius: 0,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: '#06B6D4',
+            }],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 2.2,
+            plugins: {
+              legend: { display: false },
+              tooltip: { ...tooltipDefaults, callbacks: {
+                label: ctx => ` Revenue: $${ctx.parsed.y.toLocaleString()}`,
+              }},
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: {
+                  color: '#8B8C9E',
+                  maxTicksLimit: 8,
+                  callback: (_, i) => i % 5 === 0 ? dailyData[i].day : '',
+                },
+              },
+              y: {
+                grid: { color: '#1E2035', drawBorder: false },
+                ticks: { color: '#8B8C9E', callback: v => `$${(v / 1000).toFixed(0)}k` },
+              },
+            },
+          },
+        });
+      }
+    }
+
+    function initBusinessCharts() {
+      // Profit/Loss Composed
+      if (!profitLossChartInstance) {
+        const ctx = document.getElementById('profitLossChart').getContext('2d');
+        profitLossChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: profitData.labels,
+            datasets: [
+              {
+                label: 'Revenue',
+                data: profitData.revenue,
+                backgroundColor: 'rgba(223,107,51,0.4)',
+                borderRadius: 4,
+                borderSkipped: false,
+                barPercentage: 0.5,
+              },
+              {
+                label: 'Cost',
+                data: profitData.cost,
+                backgroundColor: 'rgba(239,68,68,0.4)',
+                borderRadius: 4,
+                borderSkipped: false,
+                barPercentage: 0.5,
+              },
+              {
+                label: 'Net Profit',
+                data: profitData.profit,
+                type: 'line',
+                borderColor: '#22C55E',
+                backgroundColor: 'transparent',
+                borderWidth: 2.5,
+                pointBackgroundColor: '#22C55E',
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                tension: 0.3,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 2.2,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+              legend: {
+                display: true,
+                position: 'top',
+                align: 'end',
+                labels: { color: '#8B8C9E', boxWidth: 12, boxHeight: 12, padding: 16, usePointStyle: true, pointStyle: 'circle' },
+              },
+              tooltip: { ...tooltipDefaults, callbacks: {
+                label: ctx => ` ${ctx.dataset.label}: $${ctx.parsed.y.toLocaleString()}`,
+              }},
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: '#8B8C9E' },
+              },
+              y: {
+                grid: { color: '#1E2035', drawBorder: false },
+                ticks: { color: '#8B8C9E', callback: v => `$${v / 1000}k` },
+              },
+            },
+          },
+        });
+      }
+
+      // Cost Donut
+      if (!costDonutChartInstance) {
+        const ctx = document.getElementById('costDonutChart').getContext('2d');
+        costDonutChartInstance = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: ['COGS', 'Marketing', 'Operations', 'R&D'],
+            datasets: [{
+              data: [45, 22, 18, 15],
+              backgroundColor: costColors,
+              borderWidth: 0,
+              hoverOffset: 6,
+            }],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 1.4,
+            cutout: '60%',
+            plugins: {
+              legend: { display: false },
+              tooltip: { ...tooltipDefaults, callbacks: {
+                label: ctx => ` ${ctx.label}: ${ctx.parsed}%`,
+              }},
+            },
+          },
+        });
+      }
+    }
+
+    function initMarketingCharts() {
+      // Marketing Performance
+      if (!marketingChartInstance) {
+        const ctx = document.getElementById('marketingChart').getContext('2d');
+        marketingChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: marketingData.labels,
+            datasets: [
+              {
+                label: 'Impressions',
+                data: marketingData.impressions,
+                backgroundColor: 'rgba(139,92,246,0.4)',
+                borderRadius: 4,
+                borderSkipped: false,
+                barPercentage: 0.6,
+                yAxisID: 'y',
+              },
+              {
+                label: 'Clicks',
+                data: marketingData.clicks,
+                type: 'line',
+                borderColor: '#DF6B33',
+                backgroundColor: 'transparent',
+                borderWidth: 2.5,
+                pointBackgroundColor: '#DF6B33',
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                tension: 0.3,
+                yAxisID: 'y1',
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 2.2,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+              legend: {
+                display: true,
+                position: 'top',
+                align: 'end',
+                labels: { color: '#8B8C9E', boxWidth: 12, boxHeight: 12, padding: 16, usePointStyle: true, pointStyle: 'circle' },
+              },
+              tooltip: { ...tooltipDefaults, callbacks: {
+                label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString()}`,
+              }},
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: '#8B8C9E' },
+              },
+              y: {
+                position: 'left',
+                grid: { color: '#1E2035', drawBorder: false },
+                ticks: { color: '#8B8C9E', callback: v => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v },
+              },
+              y1: {
+                position: 'right',
+                grid: { display: false },
+                ticks: { color: '#8B8C9E', callback: v => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v },
+              },
+            },
+          },
+        });
+      }
+
+      // Traffic Pie
+      if (!trafficChartInstance) {
+        const ctx = document.getElementById('trafficChart').getContext('2d');
+        trafficChartInstance = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Google Ads', 'Facebook', 'Instagram', 'Twitter/X', 'Organic'],
+            datasets: [{
+              data: [34, 24, 20, 12, 10],
+              backgroundColor: trafficColors,
+              borderWidth: 0,
+              hoverOffset: 6,
+            }],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 1.4,
+            cutout: '60%',
+            plugins: {
+              legend: { display: false },
+              tooltip: { ...tooltipDefaults, callbacks: {
+                label: ctx => ` ${ctx.label}: ${ctx.parsed}%`,
+              }},
+            },
+          },
+        });
+      }
+    }
+
     // Tab switching
     function switchTab(btn, tab) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
       document.getElementById('tab-' + tab).classList.remove('hidden');
-      renderCharts(tab);
+
+      if (tab === 'sales') initSalesCharts();
+      else if (tab === 'business') initBusinessCharts();
+      else if (tab === 'marketing') initMarketingCharts();
     }
 
-    // Mock Data
-    const months = ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'];
-    const revenueData = [
-      { month: 'Jun', revenue: 48500, target: 50000 },
-      { month: 'Jul', revenue: 55200, target: 52000 },
-      { month: 'Aug', revenue: 61800, target: 55000 },
-      { month: 'Sep', revenue: 58300, target: 58000 },
-      { month: 'Oct', revenue: 71200, target: 62000 },
-      { month: 'Nov', revenue: 89400, target: 75000 },
-      { month: 'Dec', revenue: 98200, target: 85000 },
-      { month: 'Jan', revenue: 62100, target: 70000 },
-      { month: 'Feb', revenue: 67800, target: 72000 },
-      { month: 'Mar', revenue: 74500, target: 75000 },
-      { month: 'Apr', revenue: 81200, target: 78000 },
-      { month: 'May', revenue: 84732, target: 80000 },
-    ];
-
-    const dailyData = Array.from({ length: 30 }, (_, i) => ({
-      day: i + 1,
-      orders: Math.floor(Math.random() * 200 + 280),
-      revenue: Math.floor(Math.random() * 15000 + 20000),
-    }));
-
-    const profitData = [
-      { month: 'Jun', revenue: 48500, cost: 32500, profit: 16000 },
-      { month: 'Jul', revenue: 55200, cost: 35800, profit: 19400 },
-      { month: 'Aug', revenue: 61800, cost: 38900, profit: 22900 },
-      { month: 'Sep', revenue: 58300, cost: 37100, profit: 21200 },
-      { month: 'Oct', revenue: 71200, cost: 44800, profit: 26400 },
-      { month: 'Nov', revenue: 89400, cost: 55100, profit: 34300 },
-      { month: 'Dec', revenue: 98200, cost: 59200, profit: 39000 },
-      { month: 'Jan', revenue: 62100, cost: 40200, profit: 21900 },
-      { month: 'Feb', revenue: 67800, cost: 43100, profit: 24700 },
-      { month: 'Mar', revenue: 74500, cost: 46900, profit: 27600 },
-      { month: 'Apr', revenue: 81200, cost: 50200, profit: 31000 },
-      { month: 'May', revenue: 84732, cost: 51892, profit: 32840 },
-    ];
-
-    const marketingData = [
-      { month: 'Dec', impressions: 420000, clicks: 21000 },
-      { month: 'Jan', impressions: 380000, clicks: 19000 },
-      { month: 'Feb', impressions: 395000, clicks: 19700 },
-      { month: 'Mar', impressions: 440000, clicks: 22800 },
-      { month: 'Apr', impressions: 510000, clicks: 26500 },
-      { month: 'May', impressions: 580000, clicks: 30400 },
-    ];
-
-    // Render Charts
-    function renderCharts(tab) {
-      const { ResponsiveContainer, ComposedChart, Bar, Line, Area, AreaChart,
-              PieChart, Pie, Cell, Tooltip, XAxis, YAxis, CartesianGrid,
-              Legend, BarChart, Legend as BarLegend } = Recharts;
-
-      const tooltipStyle = {
-        contentStyle: {
-          background: 'rgba(17,18,32,0.95)',
-          border: '1px solid #1E2035',
-          borderRadius: '12px',
-          color: '#F0F0F0',
-          fontSize: '12px',
-          fontFamily: 'Inter, sans-serif',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
-        },
-        itemStyle: { color: '#8B8C9E' },
-        labelStyle: { color: '#F0F0F0', fontWeight: 600 },
-      };
-
-      const gridProps = { strokeDasharray: '3 3', vertical: false };
-
-      if (tab === 'sales' || !tab) {
-        // Revenue Bar Chart
-        if (document.getElementById('revenueChart').children.length === 0) {
-          const RevChart = Recharts.ComposedChart;
-          const root = ReactDOM.createRoot(document.getElementById('revenueChart'));
-          root.render(React.createElement(ResponsiveContainer, { width: '100%', height: 280 },
-            React.createElement(RevChart, { data: revenueData, margin: { top: 5, right: 5, left: -10, bottom: 5 } },
-              React.createElement(CartesianGrid, { ...gridProps }),
-              React.createElement(XAxis, { dataKey: 'month', tick: { fill: '#8B8C9E', fontSize: 12 } }),
-              React.createElement(YAxis, { tickFormatter: v => `$${v / 1000}k`, tick: { fill: '#8B8C9E', fontSize: 12 } }),
-              React.createElement(Tooltip, { ...tooltipStyle, formatter: (v) => [`$${v.toLocaleString()}`, ''] }),
-              React.createElement(Recharts.Bar, { dataKey: 'target', fill: 'rgba(223,107,51,0.15)', radius: [4, 4, 0, 0], name: 'Target' }),
-              React.createElement(Recharts.Bar, { dataKey: 'revenue', fill: '#DF6B33', radius: [4, 4, 0, 0], name: 'Revenue' }),
-              React.createElement(Recharts.Line, { type: 'monotone', dataKey: 'revenue', stroke: '#DF6B33', strokeWidth: 2, dot: { r: 3, fill: '#DF6B33' }, activeDot: { r: 5 } })
-            )
-          ));
-        }
-
-        // Donut Chart
-        if (document.getElementById('donutChart').children.length === 0) {
-          const catData = [
-            { name: 'Electronics', value: 38 },
-            { name: 'Fashion', value: 24 },
-            { name: 'Home & Living', value: 18 },
-            { name: 'Beauty', value: 12 },
-            { name: 'Sports', value: 8 },
-          ];
-          const colors = ['#DF6B33', '#8B5CF6', '#06B6D4', '#10B981', '#F59E0B'];
-          const root = ReactDOM.createRoot(document.getElementById('donutChart'));
-          root.render(React.createElement(ResponsiveContainer, { width: '100%', height: 220 },
-            React.createElement(PieChart, null,
-              React.createElement(Pie, {
-                data: catData, cx: '50%', cy: '50%', innerRadius: 60, outerRadius: 90,
-                paddingAngle: 3, dataKey: 'value',
-                label: ({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`,
-                labelLine: false,
-              }, catData.map((entry, i) =>
-                React.createElement(Cell, { key: entry.name, fill: colors[i] })
-              )),
-              React.createElement(Tooltip, { ...tooltipStyle, formatter: (v) => [`${v}%`, ''] })
-            )
-          ));
-        }
-
-        // Area Chart
-        if (document.getElementById('areaChart').children.length === 0) {
-          const root = ReactDOM.createRoot(document.getElementById('areaChart'));
-          root.render(React.createElement(ResponsiveContainer, { width: '100%', height: 280 },
-            React.createElement(AreaChart, { data: dailyData, margin: { top: 5, right: 5, left: -10, bottom: 5 } },
-              React.createElement(CartesianGrid, { ...gridProps }),
-              React.createElement(XAxis, { dataKey: 'day', tick: { fill: '#8B8C9E', fontSize: 11 }, tickFormatter: d => d % 5 === 0 ? `Day ${d}` : '' }),
-              React.createElement(YAxis, { tickFormatter: v => `${(v / 1000).toFixed(0)}k`, tick: { fill: '#8B8C9E', fontSize: 11 } }),
-              React.createElement(Tooltip, { ...tooltipStyle, formatter: (v) => [`$${v.toLocaleString()}`, 'Revenue'] }),
-              React.createElement(Area, { type: 'monotone', dataKey: 'revenue', stroke: '#06B6D4', fill: 'rgba(6,182,212,0.15)', strokeWidth: 2, name: 'Revenue' })
-            )
-          ));
-        }
-      }
-
-      if (tab === 'business' || !tab) {
-        // Profit/Loss Chart
-        if (document.getElementById('profitLossChart').children.length === 0) {
-          const root = ReactDOM.createRoot(document.getElementById('profitLossChart'));
-          root.render(React.createElement(ResponsiveContainer, { width: '100%', height: 280 },
-            React.createElement(Recharts.ComposedChart, { data: profitData, margin: { top: 5, right: 5, left: -10, bottom: 5 } },
-              React.createElement(CartesianGrid, { ...gridProps }),
-              React.createElement(XAxis, { dataKey: 'month', tick: { fill: '#8B8C9E', fontSize: 12 } }),
-              React.createElement(YAxis, { tickFormatter: v => `$${v / 1000}k`, tick: { fill: '#8B8C9E', fontSize: 12 } }),
-              React.createElement(Tooltip, { ...tooltipStyle, formatter: (v) => [`$${v.toLocaleString()}`, ''] }),
-              React.createElement(Recharts.Bar, { dataKey: 'revenue', fill: 'rgba(223,107,51,0.4)', radius: [4, 4, 0, 0], name: 'Revenue' }),
-              React.createElement(Recharts.Bar, { dataKey: 'cost', fill: 'rgba(239,68,68,0.4)', radius: [4, 4, 0, 0], name: 'Cost' }),
-              React.createElement(Recharts.Line, { type: 'monotone', dataKey: 'profit', stroke: '#22C55E', strokeWidth: 2.5, dot: { r: 4, fill: '#22C55E' }, name: 'Net Profit' })
-            )
-          ));
-        }
-
-        // Cost Donut
-        if (document.getElementById('costDonutChart').children.length === 0) {
-          const costData = [
-            { name: 'COGS', value: 45 },
-            { name: 'Marketing', value: 22 },
-            { name: 'Operations', value: 18 },
-            { name: 'R&D', value: 15 },
-          ];
-          const colors = ['#DF6B33', '#8B5CF6', '#06B6D4', '#10B981'];
-          const root = ReactDOM.createRoot(document.getElementById('costDonutChart'));
-          root.render(React.createElement(ResponsiveContainer, { width: '100%', height: 220 },
-            React.createElement(PieChart, null,
-              React.createElement(Pie, {
-                data: costData, cx: '50%', cy: '50%', innerRadius: 60, outerRadius: 90,
-                paddingAngle: 3, dataKey: 'value',
-              }, costData.map((entry, i) =>
-                React.createElement(Cell, { key: entry.name, fill: colors[i] })
-              )),
-              React.createElement(Tooltip, { ...tooltipStyle, formatter: (v) => [`${v}%`, ''] })
-            )
-          ));
-        }
-      }
-
-      if (tab === 'marketing' || !tab) {
-        // Marketing Chart
-        if (document.getElementById('marketingChart').children.length === 0) {
-          const root = ReactDOM.createRoot(document.getElementById('marketingChart'));
-          root.render(React.createElement(ResponsiveContainer, { width: '100%', height: 280 },
-            React.createElement(Recharts.ComposedChart, { data: marketingData, margin: { top: 5, right: 5, left: -10, bottom: 5 } },
-              React.createElement(CartesianGrid, { ...gridProps }),
-              React.createElement(XAxis, { dataKey: 'month', tick: { fill: '#8B8C9E', fontSize: 12 } }),
-              React.createElement(YAxis, { tickFormatter: v => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v, tick: { fill: '#8B8C9E', fontSize: 12 } }),
-              React.createElement(Tooltip, { ...tooltipStyle, formatter: (v, n) => [v.toLocaleString(), n === 'impressions' ? 'Impressions' : 'Clicks'] }),
-              React.createElement(Recharts.Bar, { dataKey: 'impressions', fill: 'rgba(139,92,246,0.4)', radius: [4, 4, 0, 0], name: 'Impressions' }),
-              React.createElement(Recharts.Line, { type: 'monotone', dataKey: 'clicks', stroke: '#DF6B33', strokeWidth: 2.5, dot: { r: 4, fill: '#DF6B33' }, name: 'Clicks' })
-            )
-          ));
-        }
-
-        // Traffic Pie
-        if (document.getElementById('trafficChart').children.length === 0) {
-          const trafficData = [
-            { name: 'Google', value: 34 },
-            { name: 'Facebook', value: 24 },
-            { name: 'Instagram', value: 20 },
-            { name: 'Twitter', value: 12 },
-            { name: 'Organic', value: 10 },
-          ];
-          const colors = ['#4285F4', '#1877F2', '#E4405F', '#1DA1F2', '#10B981'];
-          const root = ReactDOM.createRoot(document.getElementById('trafficChart'));
-          root.render(React.createElement(ResponsiveContainer, { width: '100%', height: 220 },
-            React.createElement(PieChart, null,
-              React.createElement(Pie, {
-                data: trafficData, cx: '50%', cy: '50%', innerRadius: 60, outerRadius: 90,
-                paddingAngle: 3, dataKey: 'value',
-              }, trafficData.map((entry, i) =>
-                React.createElement(Cell, { key: entry.name, fill: colors[i] })
-              )),
-              React.createElement(Tooltip, { ...tooltipStyle, formatter: (v) => [`${v}%`, ''] })
-            )
-          ));
-        }
-      }
-    }
-
-    // Load React & ReactDOM for Recharts
-    const script1 = document.createElement('script');
-    script1.src = 'https://unpkg.com/react@18/umd/react.production.min.js';
-    script1.onload = () => {
-      const script2 = document.createElement('script');
-      script2.src = 'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js';
-      script2.onload = () => renderCharts('sales');
-      document.head.appendChild(script2);
-    };
-    document.head.appendChild(script1);
+    // Auto-init sales tab charts
+    initSalesCharts();
   </script>
 </body>
 </html>
