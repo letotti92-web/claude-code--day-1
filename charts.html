@@ -239,6 +239,8 @@
       <button class="tab-btn active font-inter text-sm font-medium px-5 py-2.5 text-text-secondary whitespace-nowrap" onclick="switchTab(this, 'sales')">Sales Revenue</button>
       <button class="tab-btn font-inter text-sm font-medium px-5 py-2.5 text-text-secondary whitespace-nowrap" onclick="switchTab(this, 'business')">Business Results</button>
       <button class="tab-btn font-inter text-sm font-medium px-5 py-2.5 text-text-secondary whitespace-nowrap" onclick="switchTab(this, 'marketing')">Marketing</button>
+      <button class="tab-btn font-inter text-sm font-medium px-5 py-2.5 text-text-secondary whitespace-nowrap" onclick="switchTab(this, 'rankings')">Sales Rankings</button>
+      <button class="tab-btn font-inter text-sm font-medium px-5 py-2.5 text-text-secondary whitespace-nowrap" onclick="switchTab(this, 'geo')">Geography</button>
     </div>
 
     <!-- ===================== SALES TAB ===================== -->
@@ -765,6 +767,562 @@
       </div>
     </div>
 
+    <!-- ===================== SALES RANKINGS TAB ===================== -->
+    <div id="tab-rankings" class="tab-content hidden">
+
+      <!-- Metric Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
+        <div class="metric-card glass-card rounded-2xl p-5 border border-[#1E2035]">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(223,107,51,0.15);">
+              <i data-lucide="users" class="w-5 h-5" style="color:#DF6B33;"></i>
+            </div>
+            <span class="status-badge bg-green-500/15 text-green-400">Top</span>
+          </div>
+          <p class="font-inter text-2xl font-bold text-text-primary">142</p>
+          <p class="font-inter text-xs text-text-muted mt-1">Active Sales Reps</p>
+        </div>
+        <div class="metric-card glass-card rounded-2xl p-5 border border-[#1E2035]">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-green-500/15">
+              <i data-lucide="trophy" class="w-5 h-5 text-green-400"></i>
+            </div>
+            <span class="status-badge bg-yellow-500/15 text-yellow-400">New</span>
+          </div>
+          <p class="font-inter text-2xl font-bold text-text-primary">$847,320</p>
+          <p class="font-inter text-xs text-text-muted mt-1">Team Total Revenue</p>
+        </div>
+        <div class="metric-card glass-card rounded-2xl p-5 border border-[#1E2035]">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-purple-500/15">
+              <i data-lucide="target" class="w-5 h-5 text-purple-400"></i>
+            </div>
+            <span class="status-badge bg-green-500/15 text-green-400">+12%</span>
+          </div>
+          <p class="font-inter text-2xl font-bold text-text-primary">$5,966</p>
+          <p class="font-inter text-xs text-text-muted mt-1">Avg per Sales Rep</p>
+        </div>
+        <div class="metric-card glass-card rounded-2xl p-5 border border-[#1E2035]">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-cyan-500/15">
+              <i data-lucide="percent" class="w-5 h-5 text-cyan-400"></i>
+            </div>
+            <span class="status-badge bg-green-500/15 text-green-400">+8.4%</span>
+          </div>
+          <p class="font-inter text-2xl font-bold text-text-primary">87.3%</p>
+          <p class="font-inter text-xs text-text-muted mt-1">Avg Target Achievement</p>
+        </div>
+      </div>
+
+      <!-- Top 10 Ranking Table -->
+      <div class="glass-card rounded-2xl p-5 border border-[#1E2035] mb-6 lg:mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+          <div>
+            <h3 class="font-poppins font-bold text-base text-text-primary">Top 10 Sales Representatives</h3>
+            <p class="font-inter text-xs text-text-muted mt-0.5">Q2 2026 — ranked by total revenue</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="relative">
+              <input type="text" id="rankSearch" placeholder="Search reps..." class="bg-[#0D0E1C] border border-[#1E2035] rounded-lg px-3 py-1.5 pr-8 font-inter text-xs text-text-primary placeholder:text-text-muted focus:border-primary transition-colors w-40"/>
+              <i data-lucide="search" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted"></i>
+            </div>
+            <select id="rankPeriod" class="appearance-none bg-[#111220] border border-[#1E2035] rounded-lg px-3 py-1.5 pr-8 font-inter text-xs text-text-primary cursor-pointer hover:border-primary transition-colors">
+              <option>Q2 2026</option>
+              <option>Q1 2026</option>
+              <option>May 2026</option>
+              <option>April 2026</option>
+            </select>
+            <select id="rankSort" class="appearance-none bg-[#111220] border border-[#1E2035] rounded-lg px-3 py-1.5 pr-8 font-inter text-xs text-text-primary cursor-pointer hover:border-primary transition-colors">
+              <option>Sort by Revenue</option>
+              <option>Sort by Orders</option>
+              <option>Sort by Conversion</option>
+            </select>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full" id="rankingsTable">
+            <thead>
+              <tr class="border-b border-[#1E2035]">
+                <th class="font-inter text-xs font-semibold text-text-muted uppercase tracking-wider text-center pb-3 pr-2 w-12">Rank</th>
+                <th class="font-inter text-xs font-semibold text-text-muted uppercase tracking-wider text-left pb-3 pr-4">Sales Rep</th>
+                <th class="font-inter text-xs font-semibold text-text-muted uppercase tracking-wider text-center pb-3 px-2 w-16">Region</th>
+                <th class="font-inter text-xs font-semibold text-text-muted uppercase tracking-wider text-right pb-3 px-2">Revenue</th>
+                <th class="font-inter text-xs font-semibold text-text-muted uppercase tracking-wider text-right pb-3 px-2">Orders</th>
+                <th class="font-inter text-xs font-semibold text-text-muted uppercase tracking-wider text-right pb-3 px-2">AOV</th>
+                <th class="font-inter text-xs font-semibold text-text-muted uppercase tracking-wider text-center pb-3 px-2">Conversion</th>
+                <th class="font-inter text-xs font-semibold text-text-muted uppercase tracking-wider text-right pb-3 px-2">Target</th>
+                <th class="font-inter text-xs font-semibold text-text-muted uppercase tracking-wider text-center pb-3 pl-2">Achievement</th>
+              </tr>
+            </thead>
+            <tbody id="rankingsBody">
+              <tr class="data-row border-b border-[#1E2035]/50" data-name="Michael Chen">
+                <td class="py-3 pr-2 text-center">
+                  <div class="w-7 h-7 rounded-full flex items-center justify-center mx-auto" style="background:linear-gradient(135deg,#FFD700,#FFA500); box-shadow:0 0 8px rgba(255,215,0,0.3);">
+                    <span class="font-poppins font-bold text-xs text-white">1</span>
+                  </div>
+                </td>
+                <td class="py-3 pr-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center flex-shrink-0">
+                      <span class="font-poppins font-bold text-xs text-white">MC</span>
+                    </div>
+                    <div>
+                      <p class="font-inter text-sm font-medium text-text-primary leading-tight">Michael Chen</p>
+                      <p class="font-inter text-xs text-text-muted">michael.chen@company.com</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-xs text-text-secondary">North</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm font-bold" style="color:#DF6B33;">$124,580</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">847</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$147</span></td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-sm text-green-400">8.4%</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$110,000</span></td>
+                <td class="py-3 pl-2 text-center"><span class="status-badge bg-green-500/15 text-green-400">113%</span></td>
+              </tr>
+              <tr class="data-row border-b border-[#1E2035]/50" data-name="Sarah Williams">
+                <td class="py-3 pr-2 text-center">
+                  <div class="w-7 h-7 rounded-full flex items-center justify-center mx-auto" style="background:linear-gradient(135deg,#C0C0C0,#A0A0A0); box-shadow:0 0 8px rgba(192,192,192,0.3);">
+                    <span class="font-poppins font-bold text-xs text-white">2</span>
+                  </div>
+                </td>
+                <td class="py-3 pr-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-pink-700 flex items-center justify-center flex-shrink-0">
+                      <span class="font-poppins font-bold text-xs text-white">SW</span>
+                    </div>
+                    <div>
+                      <p class="font-inter text-sm font-medium text-text-primary leading-tight">Sarah Williams</p>
+                      <p class="font-inter text-xs text-text-muted">sarah.w@company.com</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-xs text-text-secondary">East</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm font-bold" style="color:#DF6B33;">$118,240</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">793</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$149</span></td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-sm text-green-400">7.9%</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$105,000</span></td>
+                <td class="py-3 pl-2 text-center"><span class="status-badge bg-green-500/15 text-green-400">113%</span></td>
+              </tr>
+              <tr class="data-row border-b border-[#1E2035]/50" data-name="David Park">
+                <td class="py-3 pr-2 text-center">
+                  <div class="w-7 h-7 rounded-full flex items-center justify-center mx-auto" style="background:linear-gradient(135deg,#CD7F32,#A0522D); box-shadow:0 0 8px rgba(205,127,50,0.3);">
+                    <span class="font-poppins font-bold text-xs text-white">3</span>
+                  </div>
+                </td>
+                <td class="py-3 pr-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center flex-shrink-0">
+                      <span class="font-poppins font-bold text-xs text-white">DP</span>
+                    </div>
+                    <div>
+                      <p class="font-inter text-sm font-medium text-text-primary leading-tight">David Park</p>
+                      <p class="font-inter text-xs text-text-muted">david.park@company.com</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-xs text-text-secondary">West</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm font-bold" style="color:#DF6B33;">$105,870</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">718</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$147</span></td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-sm text-green-400">7.2%</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$100,000</span></td>
+                <td class="py-3 pl-2 text-center"><span class="status-badge bg-green-500/15 text-green-400">106%</span></td>
+              </tr>
+              <tr class="data-row border-b border-[#1E2035]/50" data-name="Emily Rodriguez">
+                <td class="py-3 pr-2 text-center">
+                  <div class="w-7 h-7 rounded-full flex items-center justify-center mx-auto bg-[#1E2035]">
+                    <span class="font-poppins font-bold text-xs text-text-muted">4</span>
+                  </div>
+                </td>
+                <td class="py-3 pr-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center flex-shrink-0">
+                      <span class="font-poppins font-bold text-xs text-white">ER</span>
+                    </div>
+                    <div>
+                      <p class="font-inter text-sm font-medium text-text-primary leading-tight">Emily Rodriguez</p>
+                      <p class="font-inter text-xs text-text-muted">emily.r@company.com</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-xs text-text-secondary">South</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm font-semibold text-text-primary">$98,450</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">664</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$148</span></td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-sm text-green-400">6.6%</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$95,000</span></td>
+                <td class="py-3 pl-2 text-center"><span class="status-badge bg-green-500/15 text-green-400">104%</span></td>
+              </tr>
+              <tr class="data-row border-b border-[#1E2035]/50" data-name="James Thompson">
+                <td class="py-3 pr-2 text-center">
+                  <div class="w-7 h-7 rounded-full flex items-center justify-center mx-auto bg-[#1E2035]">
+                    <span class="font-poppins font-bold text-xs text-text-muted">5</span>
+                  </div>
+                </td>
+                <td class="py-3 pr-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-teal-500 to-teal-700 flex items-center justify-center flex-shrink-0">
+                      <span class="font-poppins font-bold text-xs text-white">JT</span>
+                    </div>
+                    <div>
+                      <p class="font-inter text-sm font-medium text-text-primary leading-tight">James Thompson</p>
+                      <p class="font-inter text-xs text-text-muted">james.t@company.com</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-xs text-text-secondary">North</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm font-semibold text-text-primary">$92,180</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">621</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$148</span></td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-sm text-green-400">6.2%</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$90,000</span></td>
+                <td class="py-3 pl-2 text-center"><span class="status-badge bg-green-500/15 text-green-400">102%</span></td>
+              </tr>
+              <tr class="data-row border-b border-[#1E2035]/50" data-name="Lisa Nguyen">
+                <td class="py-3 pr-2 text-center">
+                  <div class="w-7 h-7 rounded-full flex items-center justify-center mx-auto bg-[#1E2035]">
+                    <span class="font-poppins font-bold text-xs text-text-muted">6</span>
+                  </div>
+                </td>
+                <td class="py-3 pr-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-rose-500 to-rose-700 flex items-center justify-center flex-shrink-0">
+                      <span class="font-poppins font-bold text-xs text-white">LN</span>
+                    </div>
+                    <div>
+                      <p class="font-inter text-sm font-medium text-text-primary leading-tight">Lisa Nguyen</p>
+                      <p class="font-inter text-xs text-text-muted">lisa.n@company.com</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-xs text-text-secondary">West</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm font-semibold text-text-primary">$87,340</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">589</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$148</span></td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-sm text-yellow-400">5.9%</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$85,000</span></td>
+                <td class="py-3 pl-2 text-center"><span class="status-badge bg-green-500/15 text-green-400">103%</span></td>
+              </tr>
+              <tr class="data-row border-b border-[#1E2035]/50" data-name="Robert Martinez">
+                <td class="py-3 pr-2 text-center">
+                  <div class="w-7 h-7 rounded-full flex items-center justify-center mx-auto bg-[#1E2035]">
+                    <span class="font-poppins font-bold text-xs text-text-muted">7</span>
+                  </div>
+                </td>
+                <td class="py-3 pr-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center flex-shrink-0">
+                      <span class="font-poppins font-bold text-xs text-white">RM</span>
+                    </div>
+                    <div>
+                      <p class="font-inter text-sm font-medium text-text-primary leading-tight">Robert Martinez</p>
+                      <p class="font-inter text-xs text-text-muted">robert.m@company.com</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-xs text-text-secondary">East</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm font-semibold text-text-primary">$82,760</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">558</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$148</span></td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-sm text-yellow-400">5.6%</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$80,000</span></td>
+                <td class="py-3 pl-2 text-center"><span class="status-badge bg-green-500/15 text-green-400">103%</span></td>
+              </tr>
+              <tr class="data-row border-b border-[#1E2035]/50" data-name="Amanda Foster">
+                <td class="py-3 pr-2 text-center">
+                  <div class="w-7 h-7 rounded-full flex items-center justify-center mx-auto bg-[#1E2035]">
+                    <span class="font-poppins font-bold text-xs text-text-muted">8</span>
+                  </div>
+                </td>
+                <td class="py-3 pr-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center flex-shrink-0">
+                      <span class="font-poppins font-bold text-xs text-white">AF</span>
+                    </div>
+                    <div>
+                      <p class="font-inter text-sm font-medium text-text-primary leading-tight">Amanda Foster</p>
+                      <p class="font-inter text-xs text-text-muted">amanda.f@company.com</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-xs text-text-secondary">South</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm font-semibold text-text-primary">$78,920</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">534</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$148</span></td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-sm text-yellow-400">5.3%</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$80,000</span></td>
+                <td class="py-3 pl-2 text-center"><span class="status-badge bg-yellow-500/15 text-yellow-400">99%</span></td>
+              </tr>
+              <tr class="data-row border-b border-[#1E2035]/50" data-name="Kevin Lee">
+                <td class="py-3 pr-2 text-center">
+                  <div class="w-7 h-7 rounded-full flex items-center justify-center mx-auto bg-[#1E2035]">
+                    <span class="font-poppins font-bold text-xs text-text-muted">9</span>
+                  </div>
+                </td>
+                <td class="py-3 pr-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center flex-shrink-0">
+                      <span class="font-poppins font-bold text-xs text-white">KL</span>
+                    </div>
+                    <div>
+                      <p class="font-inter text-sm font-medium text-text-primary leading-tight">Kevin Lee</p>
+                      <p class="font-inter text-xs text-text-muted">kevin.l@company.com</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-xs text-text-secondary">North</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm font-semibold text-text-primary">$74,580</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">503</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$148</span></td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-sm text-yellow-400">5.0%</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$75,000</span></td>
+                <td class="py-3 pl-2 text-center"><span class="status-badge bg-yellow-500/15 text-yellow-400">99%</span></td>
+              </tr>
+              <tr class="data-row" data-name="Jessica Taylor">
+                <td class="py-3 pr-2 text-center">
+                  <div class="w-7 h-7 rounded-full flex items-center justify-center mx-auto bg-[#1E2035]">
+                    <span class="font-poppins font-bold text-xs text-text-muted">10</span>
+                  </div>
+                </td>
+                <td class="py-3 pr-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-cyan-700 flex items-center justify-center flex-shrink-0">
+                      <span class="font-poppins font-bold text-xs text-white">JT</span>
+                    </div>
+                    <div>
+                      <p class="font-inter text-sm font-medium text-text-primary leading-tight">Jessica Taylor</p>
+                      <p class="font-inter text-xs text-text-muted">jessica.t@company.com</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-xs text-text-secondary">East</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm font-semibold text-text-primary">$71,240</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">481</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$148</span></td>
+                <td class="py-3 px-2 text-center"><span class="font-inter text-sm text-yellow-400">4.8%</span></td>
+                <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">$70,000</span></td>
+                <td class="py-3 pl-2 text-center"><span class="status-badge bg-yellow-500/15 text-yellow-400">102%</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Top 3 Podium -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6 mb-6 lg:mb-8">
+        <!-- 2nd Place -->
+        <div class="glass-card rounded-2xl p-6 border border-[#1E2035] text-center" style="order:1;">
+          <div class="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center" style="background:linear-gradient(135deg,#C0C0C0,#A0A0A0); box-shadow:0 0 16px rgba(192,192,192,0.25);">
+            <span class="font-poppins font-bold text-xl text-white">SW</span>
+          </div>
+          <div class="w-8 h-8 rounded-full mx-auto -mt-1 mb-2 bg-[#1E2035] flex items-center justify-center">
+            <span class="font-poppins font-bold text-sm" style="color:#C0C0C0;">2</span>
+          </div>
+          <h4 class="font-poppins font-bold text-base text-text-primary">Sarah Williams</h4>
+          <p class="font-inter text-xs text-text-muted mt-1">East Region</p>
+          <p class="font-inter text-xl font-bold mt-3" style="color:#C0C0C0;">$118,240</p>
+          <p class="font-inter text-xs text-text-muted mt-1">113% of target</p>
+          <div class="flex items-center justify-center gap-1 mt-2">
+            <i data-lucide="trending-up" class="w-3.5 h-3.5 text-green-400"></i>
+            <span class="font-inter text-xs text-green-400">+18.4% vs Q1</span>
+          </div>
+        </div>
+        <!-- 1st Place -->
+        <div class="glass-card rounded-2xl p-6 border border-[#1E2035] text-center" style="order:0; border-color:rgba(223,107,51,0.4); box-shadow:0 0 24px rgba(223,107,51,0.1);">
+          <div class="w-20 h-20 rounded-full mx-auto mb-3 flex items-center justify-center" style="background:linear-gradient(135deg,#FFD700,#FFA500); box-shadow:0 0 24px rgba(255,215,0,0.3);">
+            <span class="font-poppins font-bold text-2xl text-white">MC</span>
+          </div>
+          <div class="w-10 h-10 rounded-full mx-auto -mt-1 mb-2" style="background:linear-gradient(135deg,#FFD700,#FFA500); display:flex; align-items:center; justify-content:center;">
+            <i data-lucide="crown" class="w-5 h-5 text-white"></i>
+          </div>
+          <h4 class="font-poppins font-extrabold text-lg text-text-primary">Michael Chen</h4>
+          <p class="font-inter text-xs text-text-muted mt-1">North Region</p>
+          <p class="font-inter text-2xl font-bold mt-3" style="color:#FFD700;">$124,580</p>
+          <p class="font-inter text-xs text-text-muted mt-1">113% of target</p>
+          <div class="flex items-center justify-center gap-1 mt-2">
+            <i data-lucide="trending-up" class="w-3.5 h-3.5 text-green-400"></i>
+            <span class="font-inter text-xs text-green-400">+22.1% vs Q1</span>
+          </div>
+        </div>
+        <!-- 3rd Place -->
+        <div class="glass-card rounded-2xl p-6 border border-[#1E2035] text-center" style="order:2;">
+          <div class="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center" style="background:linear-gradient(135deg,#CD7F32,#A0522D); box-shadow:0 0 16px rgba(205,127,50,0.25);">
+            <span class="font-poppins font-bold text-xl text-white">DP</span>
+          </div>
+          <div class="w-8 h-8 rounded-full mx-auto -mt-1 mb-2 bg-[#1E2035] flex items-center justify-center">
+            <span class="font-poppins font-bold text-sm" style="color:#CD7F32;">3</span>
+          </div>
+          <h4 class="font-poppins font-bold text-base text-text-primary">David Park</h4>
+          <p class="font-inter text-xs text-text-muted mt-1">West Region</p>
+          <p class="font-inter text-xl font-bold mt-3" style="color:#CD7F32;">$105,870</p>
+          <p class="font-inter text-xs text-text-muted mt-1">106% of target</p>
+          <div class="flex items-center justify-center gap-1 mt-2">
+            <i data-lucide="trending-up" class="w-3.5 h-3.5 text-green-400"></i>
+            <span class="font-inter text-xs text-green-400">+14.7% vs Q1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== GEOGRAPHY TAB ===================== -->
+    <div id="tab-geo" class="tab-content hidden">
+
+      <!-- Metric Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
+        <div class="metric-card glass-card rounded-2xl p-5 border border-[#1E2035]">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(223,107,51,0.15);">
+              <i data-lucide="globe" class="w-5 h-5" style="color:#DF6B33;"></i>
+            </div>
+            <span class="status-badge bg-green-500/15 text-green-400">+2</span>
+          </div>
+          <p class="font-inter text-2xl font-bold text-text-primary">12</p>
+          <p class="font-inter text-xs text-text-muted mt-1">Countries Covered</p>
+        </div>
+        <div class="metric-card glass-card rounded-2xl p-5 border border-[#1E2035]">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-blue-500/15">
+              <i data-lucide="map-pin" class="w-5 h-5 text-blue-400"></i>
+            </div>
+            <span class="status-badge bg-green-500/15 text-green-400">+3</span>
+          </div>
+          <p class="font-inter text-2xl font-bold text-text-primary">48</p>
+          <p class="font-inter text-xs text-text-muted mt-1">Active Regions</p>
+        </div>
+        <div class="metric-card glass-card rounded-2xl p-5 border border-[#1E2035]">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-green-500/15">
+              <i data-lucide="trending-up" class="w-5 h-5 text-green-400"></i>
+            </div>
+            <span class="status-badge bg-green-500/15 text-green-400">+18.2%</span>
+          </div>
+          <p class="font-inter text-2xl font-bold text-text-primary">$847,320</p>
+          <p class="font-inter text-xs text-text-muted mt-1">Global Revenue</p>
+        </div>
+        <div class="metric-card glass-card rounded-2xl p-5 border border-[#1E2035]">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-purple-500/15">
+              <i data-lucide="users" class="w-5 h-5 text-purple-400"></i>
+            </div>
+            <span class="status-badge bg-green-500/15 text-green-400">+24.5%</span>
+          </div>
+          <p class="font-inter text-2xl font-bold text-text-primary">142K</p>
+          <p class="font-inter text-xs text-text-muted mt-1">Global Customers</p>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-6 lg:mb-8">
+        <!-- Revenue by Region (Horizontal Bar) -->
+        <div class="glass-card rounded-2xl p-5 border border-[#1E2035]">
+          <div class="flex items-center justify-between mb-5">
+            <div>
+              <h3 class="font-poppins font-bold text-base text-text-primary">Revenue by Region</h3>
+              <p class="font-inter text-xs text-text-muted mt-0.5">Q2 2026 — horizontal comparison</p>
+            </div>
+          </div>
+          <canvas id="geoRegionChart"></canvas>
+        </div>
+
+        <!-- Revenue by Country (Vertical Bar) -->
+        <div class="glass-card rounded-2xl p-5 border border-[#1E2035]">
+          <div class="flex items-center justify-between mb-5">
+            <div>
+              <h3 class="font-poppins font-bold text-base text-text-primary">Top Countries by Revenue</h3>
+              <p class="font-inter text-xs text-text-muted mt-0.5">Q2 2026 — top 10 markets</p>
+            </div>
+          </div>
+          <canvas id="geoCountryChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Growth & Table Row -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-6 lg:mb-8">
+        <!-- Quarter-over-Quarter Growth -->
+        <div class="glass-card rounded-2xl p-5 border border-[#1E2035]">
+          <div class="flex items-center justify-between mb-5">
+            <div>
+              <h3 class="font-poppins font-bold text-base text-text-primary">Quarterly Growth by Region</h3>
+              <p class="font-inter text-xs text-text-muted mt-0.5">Q1 2026 vs Q2 2026 comparison</p>
+            </div>
+          </div>
+          <canvas id="geoGrowthChart"></canvas>
+        </div>
+
+        <!-- Regional Performance Table -->
+        <div class="glass-card rounded-2xl p-5 border border-[#1E2035]">
+          <div class="flex items-center justify-between mb-5">
+            <div>
+              <h3 class="font-poppins font-bold text-base text-text-primary">Regional Performance Breakdown</h3>
+              <p class="font-inter text-xs text-text-muted mt-0.5">Q2 2026 — detailed metrics by region</p>
+            </div>
+            <select class="appearance-none bg-[#111220] border border-[#1E2035] rounded-lg px-3 py-1.5 font-inter text-xs text-text-primary cursor-pointer hover:border-primary transition-colors">
+              <option>Q2 2026</option>
+              <option>Q1 2026</option>
+            </select>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="border-b border-[#1E2035]">
+                  <th class="font-inter text-xs font-semibold text-text-muted uppercase tracking-wider text-left pb-3 pr-4">Region</th>
+                  <th class="font-inter text-xs font-semibold text-text-muted uppercase tracking-wider text-right pb-3 px-2">Revenue</th>
+                  <th class="font-inter text-xs font-semibold text-text-muted uppercase tracking-wider text-right pb-3 px-2">Orders</th>
+                  <th class="font-inter text-xs font-semibold text-text-muted uppercase tracking-wider text-right pb-3 px-2">Customers</th>
+                  <th class="font-inter text-xs font-semibold text-text-muted uppercase tracking-wider text-right pb-3 pl-2">Growth</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="data-row border-b border-[#1E2035]/50">
+                  <td class="py-3 pr-4"><span class="font-inter text-sm text-text-primary">North America</span></td>
+                  <td class="py-3 px-2 text-right"><span class="font-inter text-sm font-semibold text-primary">$312,450</span></td>
+                  <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">4,720</span></td>
+                  <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">52,800</span></td>
+                  <td class="py-3 pl-2 text-right"><span class="font-inter text-sm text-green-400">+22.4%</span></td>
+                </tr>
+                <tr class="data-row border-b border-[#1E2035]/50">
+                  <td class="py-3 pr-4"><span class="font-inter text-sm text-text-primary">Europe</span></td>
+                  <td class="py-3 px-2 text-right"><span class="font-inter text-sm font-semibold text-primary">$198,340</span></td>
+                  <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">2,980</span></td>
+                  <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">33,200</span></td>
+                  <td class="py-3 pl-2 text-right"><span class="font-inter text-sm text-green-400">+18.7%</span></td>
+                </tr>
+                <tr class="data-row border-b border-[#1E2035]/50">
+                  <td class="py-3 pr-4"><span class="font-inter text-sm text-text-primary">Asia Pacific</span></td>
+                  <td class="py-3 px-2 text-right"><span class="font-inter text-sm font-semibold text-primary">$164,280</span></td>
+                  <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">2,480</span></td>
+                  <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">27,600</span></td>
+                  <td class="py-3 pl-2 text-right"><span class="font-inter text-sm text-green-400">+28.3%</span></td>
+                </tr>
+                <tr class="data-row border-b border-[#1E2035]/50">
+                  <td class="py-3 pr-4"><span class="font-inter text-sm text-text-primary">Latin America</span></td>
+                  <td class="py-3 px-2 text-right"><span class="font-inter text-sm font-semibold text-text-primary">$98,720</span></td>
+                  <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">1,490</span></td>
+                  <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">16,500</span></td>
+                  <td class="py-3 pl-2 text-right"><span class="font-inter text-sm text-green-400">+15.2%</span></td>
+                </tr>
+                <tr class="data-row border-b border-[#1E2035]/50">
+                  <td class="py-3 pr-4"><span class="font-inter text-sm text-text-primary">Middle East</span></td>
+                  <td class="py-3 px-2 text-right"><span class="font-inter text-sm font-semibold text-text-primary">$52,180</span></td>
+                  <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">785</span></td>
+                  <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">8,720</span></td>
+                  <td class="py-3 pl-2 text-right"><span class="font-inter text-sm text-green-400">+31.6%</span></td>
+                </tr>
+                <tr class="data-row">
+                  <td class="py-3 pr-4"><span class="font-inter text-sm text-text-primary">Africa</span></td>
+                  <td class="py-3 px-2 text-right"><span class="font-inter text-sm font-semibold text-text-primary">$21,350</span></td>
+                  <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">392</span></td>
+                  <td class="py-3 px-2 text-right"><span class="font-inter text-sm text-text-secondary">3,180</span></td>
+                  <td class="py-3 pl-2 text-right"><span class="font-inter text-sm text-yellow-400">+8.4%</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 
   <script>
@@ -822,6 +1380,7 @@
     let revenueChartInstance, donutChartInstance, areaChartInstance;
     let profitLossChartInstance, costDonutChartInstance;
     let marketingChartInstance, trafficChartInstance;
+    let geoRegionChartInstance, geoCountryChartInstance, geoGrowthChartInstance;
 
     function destroyChart(instance) {
       if (instance) { instance.destroy(); instance = null; }
@@ -1158,6 +1717,161 @@
       }
     }
 
+    function initGeoCharts() {
+      // Horizontal Bar — Revenue by Region
+      if (!geoRegionChartInstance) {
+        const ctx1 = document.getElementById('geoRegionChart').getContext('2d');
+        geoRegionChartInstance = new Chart(ctx1, {
+          type: 'bar',
+          data: {
+            labels: ['North America', 'Europe', 'Asia Pacific', 'Latin America', 'Middle East', 'Africa'],
+            datasets: [{
+              label: 'Revenue',
+              data: [312450, 198340, 164280, 98720, 52180, 21350],
+              backgroundColor: [
+                'rgba(223,107,51,0.8)',
+                'rgba(139,92,246,0.8)',
+                'rgba(6,182,212,0.8)',
+                'rgba(16,185,129,0.8)',
+                'rgba(245,158,11,0.8)',
+                'rgba(239,68,68,0.8)',
+              ],
+              borderRadius: 6,
+              borderSkipped: false,
+            }],
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 1.8,
+            plugins: {
+              legend: { display: false },
+              tooltip: { ...tooltipDefaults, callbacks: {
+                label: ctx => ` Revenue: $${ctx.parsed.x.toLocaleString()}`,
+              }},
+            },
+            scales: {
+              x: {
+                grid: { color: '#1E2035', drawBorder: false },
+                ticks: { color: '#8B8C9E', callback: v => `$${(v / 1000).toFixed(0)}k` },
+              },
+              y: {
+                grid: { display: false },
+                ticks: { color: '#8B8C9E' },
+              },
+            },
+          },
+        });
+      }
+
+      // Vertical Bar — Top Countries
+      if (!geoCountryChartInstance) {
+        const ctx2 = document.getElementById('geoCountryChart').getContext('2d');
+        geoCountryChartInstance = new Chart(ctx2, {
+          type: 'bar',
+          data: {
+            labels: ['United States', 'Germany', 'United Kingdom', 'Japan', 'France', 'Australia', 'Canada', 'Brazil', 'India', 'Mexico'],
+            datasets: [{
+              label: 'Revenue',
+              data: [198420, 87450, 82180, 64520, 58340, 42180, 38560, 29480, 21840, 18320],
+              backgroundColor: [
+                'rgba(223,107,51,0.85)',
+                'rgba(139,92,246,0.85)',
+                'rgba(6,182,212,0.85)',
+                'rgba(16,185,129,0.85)',
+                'rgba(245,158,11,0.85)',
+                'rgba(239,68,68,0.85)',
+                'rgba(223,107,51,0.5)',
+                'rgba(139,92,246,0.5)',
+                'rgba(6,182,212,0.5)',
+                'rgba(16,185,129,0.5)',
+              ],
+              borderRadius: 4,
+              borderSkipped: false,
+            }],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 1.8,
+            plugins: {
+              legend: { display: false },
+              tooltip: { ...tooltipDefaults, callbacks: {
+                label: ctx => ` Revenue: $${ctx.parsed.y.toLocaleString()}`,
+              }},
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: '#8B8C9E', maxRotation: 30, font: { size: 10 } },
+              },
+              y: {
+                grid: { color: '#1E2035', drawBorder: false },
+                ticks: { color: '#8B8C9E', callback: v => `$${(v / 1000).toFixed(0)}k` },
+              },
+            },
+          },
+        });
+      }
+
+      // Grouped Bar — Quarterly Growth by Region
+      if (!geoGrowthChartInstance) {
+        const ctx3 = document.getElementById('geoGrowthChart').getContext('2d');
+        geoGrowthChartInstance = new Chart(ctx3, {
+          type: 'bar',
+          data: {
+            labels: ['North America', 'Europe', 'Asia Pacific', 'Latin America', 'Middle East'],
+            datasets: [
+              {
+                label: 'Q1 2026',
+                data: [255400, 167120, 128040, 85720, 39640],
+                backgroundColor: 'rgba(139,92,246,0.5)',
+                borderRadius: 4,
+                borderSkipped: false,
+                barPercentage: 0.7,
+              },
+              {
+                label: 'Q2 2026',
+                data: [312450, 198340, 164280, 98720, 52180],
+                backgroundColor: '#DF6B33',
+                borderRadius: 4,
+                borderSkipped: false,
+                barPercentage: 0.7,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 1.8,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+              legend: {
+                display: true,
+                position: 'top',
+                align: 'end',
+                labels: { color: '#8B8C9E', boxWidth: 12, boxHeight: 12, padding: 16, usePointStyle: true, pointStyle: 'circle' },
+              },
+              tooltip: { ...tooltipDefaults, callbacks: {
+                label: ctx => ` ${ctx.dataset.label}: $${ctx.parsed.y.toLocaleString()}`,
+              }},
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: '#8B8C9E', font: { size: 11 } },
+              },
+              y: {
+                grid: { color: '#1E2035', drawBorder: false },
+                ticks: { color: '#8B8C9E', callback: v => `$${(v / 1000).toFixed(0)}k` },
+              },
+            },
+          },
+        });
+      }
+    }
+
     // Tab switching
     function switchTab(btn, tab) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1168,6 +1882,8 @@
       if (tab === 'sales') initSalesCharts();
       else if (tab === 'business') initBusinessCharts();
       else if (tab === 'marketing') initMarketingCharts();
+      else if (tab === 'rankings') lucide.createIcons();
+      else if (tab === 'geo') initGeoCharts();
     }
 
     // Auto-init sales tab charts
