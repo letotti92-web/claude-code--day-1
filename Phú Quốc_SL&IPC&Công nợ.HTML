@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Báo cáo Sản lượng &amp; Công nợ — Phú Quốc</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#eef1f8;--card:#fff;--border:#e6eaf3;--text:#1a2240;--text2:#4a5578;--mute:#8b95b5;
+--shadow:0 1px 3px rgba(31,42,80,.06),0 4px 16px rgba(31,42,80,.05);
+--shadow-lg:0 4px 12px rgba(31,42,80,.08),0 12px 28px rgba(31,42,80,.06);}
+body{font-family:'Inter',-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.45;font-size:12px;min-height:100vh;padding:10px;position:relative}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 15% 0%,rgba(99,102,241,.06),transparent 40%),radial-gradient(circle at 85% 100%,rgba(244,63,94,.05),transparent 40%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background:url('./View Nui Ong Quan 3 copy.jpg') center/cover no-repeat;opacity:.38;filter:brightness(1.08) saturate(1.2);pointer-events:none;z-index:0;transition:opacity .3s}
+.tot-cell{text-align:center !important;font-weight:900;font-size:14px;letter-spacing:.3px}
+.wrap{position:relative;z-index:1;max-width:1840px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.hdr{background:rgba(15,23,42,.80);border-radius:14px;padding:14px 22px;color:#fff;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;backdrop-filter:blur(8px)}
+.hdr::before{content:'';position:absolute;top:-50%;right:-10%;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.25),transparent 60%)}
+.hdr-inner{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.hdr .ttl{display:flex;align-items:center;gap:14px}
+.hdr .ico{width:54px;height:54px;border-radius:14px;background:#fff;border:2px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;padding:5px;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.hdr .ico svg{width:100%;height:100%}
+.hdr h1{font-size:18px;font-weight:800;letter-spacing:-.4px}
+.hdr h1 .live{color:#fbbf24;font-size:11px;margin-left:6px;font-weight:700;background:rgba(251,191,36,.15);padding:2px 8px;border-radius:6px}
+.hdr .sub{font-size:11px;color:rgba(255,255,255,.7);margin-top:2px}
+.hdr .meta{display:flex;gap:18px;font-size:10px;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.4px;font-weight:600}
+.hdr .meta b{color:#fff;font-weight:800;display:block;font-size:13px;margin-top:2px;letter-spacing:0;text-transform:none}
+.toolbar{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.60);border:1px solid rgba(230,234,243,.35);border-radius:10px;padding:8px 12px;box-shadow:var(--shadow);font-size:11px;flex-wrap:wrap;backdrop-filter:blur(6px)}
+.tb-group{display:flex;align-items:center;gap:6px;padding-right:10px;border-right:1px solid var(--border)}
+.tb-group:last-child{border-right:none}
+.tb-label{font-size:9px;color:var(--mute);font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+.tb-select{padding:5px 9px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:11px;background:#fff;color:var(--text);font-weight:600;cursor:pointer;min-width:120px;max-width:300px}
+.tb-input{padding:5px 9px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:11px;background:#f8fafc;color:var(--text);min-width:200px;flex:1}
+.btn{padding:5px 10px;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:4px}
+.btn-primary{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff}
+.btn-secondary{background:#f1f5f9;color:var(--text2);border:1px solid var(--border)}
+.tb-status{font-size:10px;color:var(--mute);font-weight:600;display:flex;align-items:center;gap:4px;margin-left:auto}
+.tb-status .dot{width:7px;height:7px;border-radius:50%;background:#fbbf24;animation:pulse 1.4s infinite}
+.tb-status.ok .dot{background:#10b981}
+.tb-status.err .dot{background:#dc2626}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+@keyframes shakePulse{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px) scale(1.05)}75%{transform:translateX(4px) scale(1.05)}}
+.banner{display:flex;align-items:center;gap:14px;padding:14px 22px;border-radius:14px;color:#fff;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;margin-top:6px;backdrop-filter:blur(6px)}
+.banner.b-sl{background:rgba(6,95,70,.82)}
+.banner.b-cn{background:rgba(124,45,18,.82)}
+.banner.b-claim{background:rgba(124,45,18,.82)}
+.banner .b-ico{width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.banner .b-body{flex:1}
+.banner .b-title{font-size:18px;font-weight:800;letter-spacing:-.3px;margin-bottom:2px}
+.banner .b-sub{font-size:11.5px;color:rgba(255,255,255,.85)}
+.banner .b-stats{display:flex;gap:20px;font-size:10px;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+.banner .b-stats b{color:#fff;font-weight:800;display:block;font-size:20px;margin-top:1px;letter-spacing:-.4px;text-transform:none}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.kpi{background:rgba(255,255,255,.55);border:1px solid rgba(230,234,243,.35);border-radius:12px;padding:12px 14px;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(31,42,80,.04),0 4px 16px rgba(31,42,80,.03);backdrop-filter:blur(10px)}
+.kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:0 4px 4px 0}
+.kpi.k1::before{background:linear-gradient(180deg,#3b82f6,#06b6d4)}
+.kpi.k2::before{background:linear-gradient(180deg,#10b981,#34d399)}
+.kpi.k3::before{background:linear-gradient(180deg,#06b6d4,#3b82f6)}
+.kpi.k4::before{background:linear-gradient(180deg,#10b981,#06d6a0)}
+.kpi.k5::before{background:linear-gradient(180deg,#a78bfa,#c4b5fd)}
+.kpi.k6::before{background:linear-gradient(180deg,#16a34a,#10b981)}
+.kpi.k7::before{background:linear-gradient(180deg,#8b5cf6,#a78bfa)}
+.kpi.k8::before{background:linear-gradient(180deg,#f43f5e,#ec4899)}
+.kpi.kc1::before{background:linear-gradient(180deg,#fbbf24,#f59e0b)}
+.kpi.kc2::before{background:linear-gradient(180deg,#10b981,#34d399)}
+.kpi.kc3::before{background:linear-gradient(180deg,#a855f7,#c084fc)}
+.kpi.kc4::before{background:linear-gradient(180deg,#f43f5e,#ec4899)}
+.kpi .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.kpi .lbl{font-size:9.5px;color:var(--mute);text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+.kpi .badge{font-size:9px;padding:2px 6px;border-radius:6px;font-weight:700;background:#dbeafe;color:#1d4ed8}
+.kpi.k2 .badge,.kpi.k4 .badge,.kpi.k6 .badge,.kpi.kc2 .badge{background:#d1fae5;color:#047857}
+.kpi.k8 .badge,.kpi.kc4 .badge{background:#fee2e2;color:#b91c1c}
+.kpi.kc1 .badge{background:#fed7aa;color:#c2410c}
+.kpi.kc3 .badge{background:#ede9fe;color:#6d28d9}
+.kpi .val{font-size:27px;font-weight:800;letter-spacing:-.7px;color:var(--text);line-height:1.05}
+.kpi .val .u{font-size:11px;color:var(--mute);font-weight:600;margin-left:3px}
+.kpi .sub-lbl{font-size:9.5px;color:var(--mute);margin-top:5px;font-weight:500}
+.kpi .sub-lbl b{color:var(--text);font-weight:700}
+.kpi .trk{margin-top:5px;height:4px;background:#f1f5f9;border-radius:3px;overflow:hidden}
+.kpi .trk div{height:100%;border-radius:3px}
+.row{display:grid;gap:10px}
+.r-2-1{grid-template-columns:1.05fr 1.95fr}
+.r-1-1-1{grid-template-columns:1fr 1fr 1fr}
+.card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow);position:relative}
+.card h3{font-size:10.5px;color:var(--text);font-weight:800;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.card h3::before{content:'';width:4px;height:13px;background:linear-gradient(180deg,#6366f1,#8b5cf6);border-radius:2px}
+.card h3 .sub{font-size:9.5px;color:var(--mute);font-weight:500;margin-left:auto;text-transform:none;letter-spacing:0}
+
+/* SL Bars compact 3-col grid */
+.bars{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bar-r{display:flex;flex-direction:column;gap:3px;padding:8px 10px;background:rgba(255,255,255,.55);border:1px solid rgba(230,234,243,.35);border-radius:8px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.bar-r::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.bar-r.b-high::before{background:linear-gradient(180deg,#10b981,#34d399)}
+.bar-r.b-mid::before{background:linear-gradient(180deg,#3b82f6,#06b6d4)}
+.bar-r.b-low::before{background:linear-gradient(180deg,#f59e0b,#fbbf24)}
+.bar-r.b-crit::before{background:linear-gradient(180deg,#f43f5e,#ec4899)}
+.bar-r .top{display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.bar-r .nm{font-weight:700;color:var(--text);font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-r .pct-num{font-weight:800;font-size:15px;letter-spacing:-.4px}
+.bar-r.b-high .pct-num{color:#059669}
+.bar-r.b-mid .pct-num{color:#2563eb}
+.bar-r.b-low .pct-num{color:#d97706}
+.bar-r.b-crit .pct-num{color:#dc2626}
+.bar-r .vals{color:var(--mute);font-size:11px;font-variant-numeric:tabular-nums}
+.bar-r .vals b{color:var(--text)}
+.bar-r .bg{height:8px;background:#f1f5f9;border-radius:4px;overflow:hidden;position:relative;border:1px solid #e2e8f0;margin-top:2px}
+.bar-r .fill{height:100%;border-radius:3px;transition:width .8s ease-out}
+.bar-r .fill.high{background:linear-gradient(90deg,#10b981,#34d399)}
+.bar-r .fill.mid{background:linear-gradient(90deg,#3b82f6,#06b6d4)}
+.bar-r .fill.low{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.bar-r .fill.crit{background:linear-gradient(90deg,#f43f5e,#ec4899)}
+
+/* Claim cards — horizontal premium layout, project name prominent */
+.claim-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.claim-card{background:rgba(255,255,255,.55);border:1px solid rgba(230,234,243,.35);border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:center;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(31,42,80,.04);backdrop-filter:blur(10px);transition:transform .2s,box-shadow .2s}
+.claim-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(31,42,80,.10)}
+.claim-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:5px}
+.claim-card.s-ok::before{background:linear-gradient(180deg,#10b981,#34d399)}
+.claim-card.s-normal::before{background:linear-gradient(180deg,#06b6d4,#3b82f6)}
+.claim-card.s-slow::before{background:linear-gradient(180deg,#f59e0b,#fbbf24)}
+.claim-card.s-critical::before{background:linear-gradient(180deg,#f43f5e,#ec4899)}
+.claim-card .roman-badge{position:absolute;top:6px;right:8px;font-size:10px;font-weight:800;color:var(--mute);background:rgba(99,102,241,.08);padding:2px 7px;border-radius:6px;letter-spacing:.5px}
+.gauge{position:relative;width:96px;height:96px;margin:0 auto}
+.gauge svg{transform:rotate(-90deg);width:100%;height:100%;filter:drop-shadow(0 2px 4px rgba(0,0,0,.08))}
+.gauge .gauge-bg{fill:none;stroke:#f1f5f9;stroke-width:10}
+.gauge .gauge-fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dasharray 1s cubic-bezier(.4,0,.2,1)}
+.claim-card.s-ok .gauge .gauge-fill{stroke:url(#gOk)}
+.claim-card.s-normal .gauge .gauge-fill{stroke:url(#gNormal)}
+.claim-card.s-slow .gauge .gauge-fill{stroke:url(#gSlow)}
+.claim-card.s-critical .gauge .gauge-fill{stroke:url(#gCritical)}
+.gauge .gauge-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;line-height:1}
+.gauge .gauge-pct{font-size:26px;font-weight:800;letter-spacing:-.6px;display:block}
+.claim-card.s-ok .gauge-pct{color:#059669}
+.claim-card.s-normal .gauge-pct{color:#2563eb}
+.claim-card.s-slow .gauge-pct{color:#d97706}
+.claim-card.s-critical .gauge-pct{color:#dc2626}
+.gauge .gauge-lbl{font-size:8px;color:var(--mute);font-weight:700;text-transform:uppercase;display:block;margin-top:1px}
+.claim-card .body{display:flex;flex-direction:column;gap:6px;min-width:0}
+.claim-card .nm{font-size:13px;font-weight:800;color:var(--text);line-height:1.25;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;padding-right:30px}
+.claim-card .stats{display:flex;flex-direction:column;gap:3px;font-size:11px}
+.claim-card .stats .r{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.claim-card .stats .r .l{color:var(--mute);font-weight:600}
+.claim-card .stats .r .v{color:var(--text);font-weight:800;font-size:12px;font-variant-numeric:tabular-nums}
+.claim-card .stats .r.unclaim .v{color:#dc2626}
+.claim-card .badge-status{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:6px;font-size:9.5px;font-weight:800;letter-spacing:.4px;width:fit-content;margin-top:3px}
+.claim-card.s-ok .badge-status{background:#d1fae5;color:#047857}
+.claim-card.s-normal .badge-status{background:#dbeafe;color:#1d4ed8}
+.claim-card.s-slow .badge-status{background:#fed7aa;color:#c2410c;animation:pulse 2.5s infinite}
+.claim-card.s-critical .badge-status{background:#fee2e2;color:#b91c1c;animation:pulse 1.5s infinite}
+
+.claim-summary{background:linear-gradient(135deg,#fef3c7 0%,#fed7aa 100%);border:1.5px solid #f59e0b;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:14px}
+.claim-summary .ic{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,#f59e0b,#dc2626);display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;flex-shrink:0}
+.claim-summary .body{flex:1;font-size:11.5px;color:#7c2d12;line-height:1.5}
+.claim-summary .body .h{font-size:13px;font-weight:800;color:#7c2d12;margin-bottom:3px}
+.claim-summary .v{font-size:24px;font-weight:800;color:#dc2626;letter-spacing:-.5px}
+.claim-summary .v small{font-size:11px;color:var(--mute);font-weight:600}
+
+/* Slice cards */
+.slice-stack{display:flex;flex-direction:column;gap:6px}
+.slice-card{background:rgba(255,255,255,.55);border:1px solid rgba(230,234,243,.35);border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:10px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.slice-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;border-radius:0 5px 5px 0}
+.slice-card.s-tu::before{background:linear-gradient(180deg,#fbbf24,#f59e0b)}
+.slice-card.s-ipc::before{background:linear-gradient(180deg,#10b981,#34d399)}
+.slice-card.s-ncb::before{background:linear-gradient(180deg,#a855f7,#c084fc)}
+.slice-card .ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex-shrink:0}
+.slice-card.s-tu .ico{background:linear-gradient(135deg,#fbbf24,#f59e0b)}
+.slice-card.s-ipc .ico{background:linear-gradient(135deg,#10b981,#34d399)}
+.slice-card.s-ncb .ico{background:linear-gradient(135deg,#a855f7,#c084fc)}
+.slice-card .body{flex:1;min-width:0}
+.slice-card .lbl{font-size:9.5px;color:var(--mute);text-transform:uppercase;letter-spacing:.4px;font-weight:700}
+.slice-card .v{font-size:20px;font-weight:800;letter-spacing:-.5px}
+.slice-card.s-tu .v{color:#c2410c}
+.slice-card.s-ipc .v{color:#059669}
+.slice-card.s-ncb .v{color:#7c3aed}
+.slice-card .v .u{font-size:10px;color:var(--mute);font-weight:600;margin-left:2px}
+.slice-card .pct{font-size:10px;color:var(--text2);font-weight:600}
+.slice-card .pct b{font-size:11px}
+
+/* CN bars */
+.cn-bars-list{display:flex;flex-direction:column;gap:6px}
+.cn-row{display:flex;align-items:center;gap:8px;font-size:10.5px;background:rgba(255,255,255,.45);padding:6px 8px;border-radius:8px;backdrop-filter:blur(6px)}
+.cn-row .nm{flex:0 0 130px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cn-row .bg{flex:1;height:14px;background:rgba(241,245,249,.60);border-radius:4px;overflow:hidden;border:1px solid rgba(226,232,240,.50);display:flex}
+.cn-row .seg{height:100%}
+.cn-row .s-paid{background:linear-gradient(90deg,#10b981,#34d399)}
+.cn-row .s-ncb{background:linear-gradient(90deg,#06b6d4,#3b82f6)}
+.cn-row .s-left{background:linear-gradient(90deg,#f43f5e,#ec4899)}
+.cn-row .v{flex:0 0 60px;text-align:right;font-size:11px;color:#dc2626;font-weight:700;font-variant-numeric:tabular-nums}
+
+/* Premium table */
+.tbl-wrap{overflow:auto;border-radius:12px;border:1px solid rgba(230,234,243,.35);background:rgba(255,255,255,.60);backdrop-filter:blur(10px)}
+.tbl-premium{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px;background:rgba(255,255,255,.55)}
+.tbl-premium thead th{background:linear-gradient(180deg,#1e293b,#334155);color:#fff;text-align:center;padding:10px 8px;font-weight:800;text-transform:uppercase;font-size:10.5px;position:sticky;top:0;z-index:1;white-space:nowrap}
+.tbl-premium thead tr:last-child th{background:linear-gradient(180deg,#475569,#64748b);font-size:10px}
+.tbl-premium thead th.sec-sl{background:linear-gradient(180deg,#065f46,#10b981) !important}
+.tbl-premium thead th.sec-cn{background:linear-gradient(180deg,#7c2d12,#dc2626) !important}
+.tbl-premium thead th.sec-thu{background:linear-gradient(180deg,#1e3a5f,#1e40af) !important}
+.tbl-premium thead th.col-thanh{background:linear-gradient(180deg,#065f46,#10b981) !important;font-size:11px}
+.tbl-premium thead th.col-claim{background:linear-gradient(180deg,#1e3a5f,#3b82f6) !important}
+.tbl-premium tbody tr:nth-child(even) td{background:rgba(250,251,252,.50)}
+.tbl-premium tbody tr:hover td{background:rgba(238,242,255,.70) !important}
+.tbl-premium tbody td{padding:9px 8px;border-bottom:1px solid rgba(221,227,240,.50);border-right:1px solid rgba(238,242,249,.50);color:var(--text2);font-size:12.5px;background:rgba(255,255,255,.40)}
+.tbl-premium tbody td:last-child{border-right:none}
+.tbl-premium tbody td.col-claim-cell{border-right:1px solid rgba(191,219,254,.60)}
+.tbl-premium tbody td.num{text-align:right;font-variant-numeric:tabular-nums}
+.tbl-premium tbody td.col-claim-cell{background:rgba(239,246,255,.60) !important;font-weight:700;color:#1d4ed8;border-left:1px solid rgba(191,219,254,.60);border-right:1px solid rgba(191,219,254,.60)}
+.tbl-premium tbody tr.hl-row td{background:rgba(254,242,242,.60) !important}
+.tbl-premium tbody tr.hl-row-amber td{background:rgba(255,251,235,.60) !important}
+.tbl-premium tbody tr.hl-row-green td{background:rgba(240,253,244,.60) !important}
+.tbl-premium tfoot td{background:linear-gradient(180deg,#1e293b,#334155) !important;color:#fff !important;padding:11px 8px;font-weight:800;font-size:13px;border-bottom:none}
+.tbl-premium tfoot td:first-child{text-align:center;font-size:13px;letter-spacing:.3px}
+.tbl-premium tfoot td.col-claim-cell{border-right:1px solid #93c5fd}
+.tbl-premium tfoot td.col-claim-cell{background:linear-gradient(180deg,#1e3a5f,#3b82f6) !important;color:#fff !important}
+.danger{color:#dc2626;font-weight:700}
+.warn{color:#d97706;font-weight:700}
+.ok{color:#059669;font-weight:700}
+.hl-tag{display:inline-block;padding:1px 5px;border-radius:4px;font-size:9px;font-weight:800;margin-right:3px}
+.hl-critical{background:#dc2626;color:#fff}
+.hl-warning{background:#f59e0b;color:#fff}
+.hl-success{background:#059669;color:#fff}
+.foot{text-align:center;padding:10px;color:var(--mute);font-size:10px;margin-top:6px}
+.foot b{color:#6366f1}
+
+/* ===================== RESPONSIVE ===================== */
+/* Tablet (768px - 1024px) */
+@media (max-width:1024px){
+  .kpis{grid-template-columns:repeat(2,1fr);gap:10px}
+  .r-2-1{grid-template-columns:1fr}
+  .r-1-1-1{grid-template-columns:1fr}
+  .bars{grid-template-columns:repeat(2,1fr);gap:10px}
+  .claim-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .tbl-premium{font-size:12px}
+  .tbl-premium thead th{font-size:10px;padding:8px 6px}
+  .tbl-premium tbody td{padding:8px 6px}
+  .tbl-premium tfoot td{font-size:12px}
+  .banner .b-stats b{font-size:18px}
+}
+
+/* Mobile landscape (600px - 767px) */
+@media (max-width:767px){
+  body{padding:6px;font-size:11px}
+  .wrap{max-width:100%}
+  .kpis{grid-template-columns:1fr 1fr;gap:8px}
+  .kpi{padding:10px}
+  .kpi .lbl{font-size:10px}
+  .kpi .val{font-size:20px}
+  .kpi .sub{font-size:9px}
+  .r-2-1{grid-template-columns:1fr}
+  .r-1-1-1{grid-template-columns:1fr;gap:8px}
+  .bars{grid-template-columns:1fr;gap:8px}
+  .bar-r .top,.bar-r .nm{font-size:11px}
+  .bar-r .pct-num{font-size:13px}
+  .bar-r .vals{font-size:10px}
+  .claim-grid{grid-template-columns:1fr;gap:8px}
+  .claim-card{grid-template-columns:80px 1fr;gap:10px;padding:10px}
+  .claim-card .nm{font-size:11px}
+  .claim-card .stats{font-size:10px}
+  .claim-summary .lbl{font-size:11px}
+  .claim-summary .v{font-size:22px}
+  .tbl-premium{font-size:11px}
+  .tbl-premium thead th{font-size:9px;padding:6px 4px}
+  .tbl-premium thead tr:last-child th{font-size:9px}
+  .tbl-premium thead th.col-thanh{font-size:9px}
+  .tbl-premium tbody td{padding:7px 4px}
+  .tbl-premium tfoot td{font-size:11px;padding:9px 4px}
+  .tbl-premium .tot-cell{font-size:13px}
+  .banner.b-cn,.banner.b-thu,.banner.b-claim{padding:10px 12px;flex-direction:column;align-items:flex-start;gap:6px}
+  .banner .b-stats{display:flex;flex-direction:row;flex-wrap:wrap;gap:6px 16px}
+  .banner .b-stats b{font-size:16px}
+  .banner .b-stats span{font-size:10px}
+  .banner .b-stats .sep{display:none}
+  .tbl-premium thead th{white-space:normal}
+  .tbl-premium tbody td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:80px}
+}
+
+/* Mobile portrait (< 600px) */
+@media (max-width:480px){
+  body{padding:4px;font-size:10px}
+  .kpis{grid-template-columns:1fr;gap:6px}
+  .kpi{padding:8px 10px}
+  .kpi .lbl{font-size:9px}
+  .kpi .val{font-size:18px}
+  .kpi .sub{font-size:8px}
+  .claim-card{grid-template-columns:70px 1fr;padding:8px;gap:8px}
+  .claim-card .nm{font-size:10px}
+  .claim-card .stats{font-size:9px}
+  .claim-card .gauge-pct{font-size:20px}
+  .claim-summary .lbl{font-size:10px}
+  .claim-summary .v{font-size:20px}
+  .tbl-wrap{border-radius:8px}
+  .tbl-premium thead th{font-size:8px;padding:5px 3px;letter-spacing:0}
+  .tbl-premium thead tr:last-child th{font-size:8px}
+  .tbl-premium thead th.col-thanh{font-size:8px}
+  .tbl-premium tbody td{padding:6px 3px;font-size:10px}
+  .tbl-premium tfoot td{padding:7px 3px;font-size:10px}
+  .tbl-premium .tot-cell{font-size:12px}
+  .tbl-premium tbody td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60px}
+  .banner .b-stats b{font-size:14px}
+  .banner .b-stats span{font-size:9px}
+  .cn-row .v{font-size:10px}
+  .bar-r .top,.bar-r .nm{font-size:10px}
+  .bar-r .pct-num{font-size:12px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gOk" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#34d399"/></linearGradient>
+    <linearGradient id="gNormal" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient>
+    <linearGradient id="gSlow" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient>
+    <linearGradient id="gCritical" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f43f5e"/><stop offset="100%" stop-color="#ec4899"/></linearGradient>
+  </defs>
+</svg>
+<div class="hdr">
+  <div class="hdr-inner">
+    <div class="ttl">
+      <div class="ico"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="ccBg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#1e3a8a"/><stop offset="100%" stop-color="#0f172a"/></radialGradient></defs><circle cx="50" cy="50" r="48" fill="url(#ccBg)"/><ellipse cx="2" cy="50" rx="7" ry="14" fill="#fff"/><ellipse cx="98" cy="50" rx="7" ry="14" fill="#fff"/><circle cx="50" cy="50" r="15" fill="#ea580c"/><circle cx="50" cy="50" r="15" fill="none" stroke="#fff" stroke-width="2"/></svg></div>
+      <div>
+        <h1>BÁO CÁO SẢN LƯỢNG &amp; CÔNG NỢ <span class="live">⚡ LIVE</span></h1>
+        <div class="sub">Khu vực Phú Quốc — Sun Group × Ccons | Tuần 19/2026 — 08/05/2026</div>
+      </div>
+    </div>
+    <div class="meta">
+      <div>Dự án<b id="metaDA">6</b></div>
+      <div>Hợp đồng<b id="metaHD">14</b></div>
+      <div>HĐ+PL<b id="metaTotal">0t</b></div>
+    </div>
+  </div>
+</div>
+<div class="toolbar">
+  <div class="tb-group">
+    <span class="tb-label">🔍 Lọc</span>
+    <select class="tb-select" id="slcProject"><option value="all">Tất cả dự án</option></select>
+    <select class="tb-select" id="slcContract"><option value="all">Tất cả hợp đồng</option></select>
+    <button class="btn btn-secondary" id="btnClear">✕ Reset</button>
+  </div>
+  <div class="tb-group">
+    <span class="tb-label">🔗 Sheet</span>
+    <input type="text" class="tb-input" id="gsUrl" value="https://docs.google.com/spreadsheets/d/1RrSu_d8JrwjtV1aO9nbfUqT9f4gaR9BbTkM9ZOhEWqY/edit?usp=sharing">
+    <button class="btn btn-primary" id="btnSync">🔄 Sync</button>
+    <label style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--mute);font-weight:600;cursor:pointer">
+      <input type="checkbox" id="autoSync" checked> Auto
+    </label>
+    <select id="syncInt" class="tb-select" style="min-width:62px;max-width:80px">
+      <option value="60000">1p</option>
+      <option value="300000" selected>5p</option>
+      <option value="900000">15p</option>
+      <option value="1800000">30p</option>
+    </select>
+  </div>
+  <div class="tb-group">
+    <span class="tb-label">📁 Local</span>
+    <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none">
+    <button class="btn btn-secondary" id="btnPickFile" title="Upload file Excel để lấy số liệu chính xác (khuyên dùng nếu mở dashboard từ file:// — CORS chặn sync GSheet)">📂 Chọn file Excel</button>
+    <span style="font-size:10px;color:var(--mute);font-style:italic">hoặc kéo-thả file vào đây</span>
+  </div>
+  <div class="tb-status" id="tbStatus"><span class="dot"></span><span id="tbStatusText">Baked data 08/05/2026</span></div>
+</div>
+<div class="banner b-sl">
+  <div class="b-ico">🏗️</div>
+  <div class="b-body">
+    <div class="b-title">BÁO CÁO SẢN LƯỢNG</div>
+    <div class="b-sub">Khối lượng đã thi công vs Giá trị hợp đồng — đến hết Tuần 19/2026</div>
+  </div>
+  <div class="b-stats">
+    <div>HĐ+PL<b id="bsHD">1.687,7t</b></div>
+    <div>SL Lũy kế<b id="bsSL">1.119,3t</b></div>
+    <div>Tỷ lệ<b id="bsPCT">66,3%</b></div>
+    <div>Tuần 19<b id="bsT19">20,4t</b></div>
+  </div>
+</div>
+
+<div class="kpis">
+  <div class="kpi k1"><div class="top"><div class="lbl">Tổng HĐ + PL</div><div class="badge">100%</div></div>
+    <div class="val" id="kHDPL">0<span class="u">tỷ</span></div>
+    <div class="sub-lbl" id="kHDsub">— dự án</div></div>
+  <div class="kpi k2"><div class="top"><div class="lbl">Sản lượng lũy kế</div><div class="badge" id="bSL">0%</div></div>
+    <div class="val" id="kSL">0<span class="u">tỷ</span></div>
+    <div class="trk"><div id="trkSL" style="width:0%;background:linear-gradient(90deg,#10b981,#34d399)"></div></div>
+    <div class="sub-lbl">Còn <b id="slConL">0t</b> chưa thi công</div></div>
+  <div class="kpi k3"><div class="top"><div class="lbl">SL 2026 YTD</div><div class="badge">+T19</div></div>
+    <div class="val" id="kSL2026">0<span class="u">tỷ</span></div>
+    <div class="sub-lbl">Đầu năm — đến hết tuần 19</div></div>
+  <div class="kpi k4"><div class="top"><div class="lbl">SL Tuần 19</div><div class="badge">tuần này</div></div>
+    <div class="val" id="kSLW">0<span class="u">tỷ</span></div>
+    <div class="sub-lbl">Phát sinh tuần báo cáo</div></div>
+</div>
+
+<div class="card">
+  <h3>📈 % Hoàn thành sản lượng <span class="sub" id="slBarSub">SL/HĐ theo dự án</span></h3>
+  <div class="bars" id="slBars"></div>
+</div>
+
+<div class="banner b-claim">
+  <div class="b-ico">⚡</div>
+  <div class="b-body">
+    <div class="b-title">TÌNH TRẠNG CLAIM</div>
+    <div class="b-sub">Lũy kế Sản lượng Hồ sơ (cột L) so với Sản lượng thực hiện — đánh giá tốc độ làm hồ sơ</div>
+  </div>
+  <div class="b-stats">
+    <div>SL<b id="bClSL">1.119t</b></div>
+    <div>Đã Claim<b id="bClIPC">856,0t</b></div>
+    <div>%Claim<b id="bClPct">76,5%</b></div>
+    <div>Chưa Claim<b id="bClUC">263,4t</b></div>
+  </div>
+</div>
+
+<div class="kpis">
+  <div class="kpi kc1"><div class="top"><div class="lbl">Tạm ứng (HĐ+PL)</div><div class="badge" id="bcTU">0%</div></div>
+    <div class="val" id="kcTU">0<span class="u">tỷ</span></div>
+    <div class="trk"><div id="trkTU" style="width:0%;background:linear-gradient(90deg,#fbbf24,#f59e0b)"></div></div>
+    <div class="sub-lbl">Tiền ứng theo HĐ</div></div>
+  <div class="kpi kc2"><div class="top"><div class="lbl">Đã Claim (Lũy kế HS)</div><div class="badge" id="bcIPC">0% SL</div></div>
+    <div class="val" id="kcIPC">0<span class="u">tỷ</span></div>
+    <div class="trk"><div id="trkIPC" style="width:0%;background:linear-gradient(90deg,#10b981,#34d399)"></div></div>
+    <div class="sub-lbl">Hồ sơ Claim đã lập</div></div>
+  <div class="kpi kc3"><div class="top"><div class="lbl">NCB Bao TT</div><div class="badge" id="bcNCBp">0%</div></div>
+    <div class="val" id="kcNCB">0<span class="u">tỷ</span></div>
+    <div class="trk"><div id="trkNCB" style="width:0%;background:linear-gradient(90deg,#a855f7,#c084fc)"></div></div>
+    <div class="sub-lbl">Đã giải ngân qua NH</div></div>
+  <div class="kpi kc4"><div class="top"><div class="lbl">⚠ SL chưa Claim</div><div class="badge" id="bcUC">0% SL</div></div>
+    <div class="val" id="kcUC">0<span class="u">tỷ</span></div>
+    <div class="trk"><div id="trkUC" style="width:0%;background:linear-gradient(90deg,#f43f5e,#ec4899)"></div></div>
+    <div class="sub-lbl">SL − Đã Claim</div></div>
+</div>
+
+<div class="card">
+  <h3>🎯 Tình trạng Claim theo dự án <span class="sub">% = Lũy kế SL Hồ sơ (cột L sheet 0.0) / Sản lượng thực hiện · 🔄 Sync để lấy số liệu live</span></h3>
+  <div class="claim-grid" id="claimGrid"></div>
+</div>
+
+<div class="claim-summary">
+  <div class="ic">⚠️</div>
+  <div class="body">
+    <div class="h" id="claimSummaryHead">SL chưa Claim — đẩy hồ sơ</div>
+    <span id="claimSummaryBody">Đang tính toán...</span>
+  </div>
+  <div>
+    <div class="v" id="claimUnclaimed">0,0t<small> tỷ ₫</small></div>
+    <div style="font-size:9px;color:var(--mute);text-transform:uppercase;letter-spacing:.5px;font-weight:700;text-align:right">SL chưa Claim</div>
+  </div>
+</div>
+
+<div class="banner b-cn">
+  <div class="b-ico">💰</div>
+  <div class="b-body">
+    <div class="b-title">BÁO CÁO CÔNG NỢ</div>
+    <div class="b-sub">Hiệu quả thu hồi — DNTT vs Thanh toán chi tiết (Tạm ứng/IPC + NCB BTT) vs Còn lại</div>
+  </div>
+  <div class="b-stats">
+    <div>DNTT<b id="bcDN">911,5t</b></div>
+    <div>Đã TT<b id="bcTH">813,2t</b></div>
+    <div>Tỷ lệ TT<b id="bcPCT">89,2%</b></div>
+    <div>Còn lại<b id="bcCL">98,3t</b></div>
+  </div>
+</div>
+
+<div class="kpis">
+  <div class="kpi k5"><div class="top"><div class="lbl">DNTT lũy kế</div><div class="badge" id="bDN">0% SL</div></div>
+    <div class="val" id="kDNTT">0<span class="u">tỷ</span></div>
+    <div class="sub-lbl">Đã hoàn tất hồ sơ TT</div></div>
+  <div class="kpi k6"><div class="top"><div class="lbl">Tạm ứng/IPC</div><div class="badge" id="bDT">0%</div></div>
+    <div class="val" id="kDTT">0<span class="u">tỷ</span></div>
+    <div class="sub-lbl">Tạm ứng & IPC đã thanh toán</div></div>
+  <div class="kpi k7"><div class="top"><div class="lbl">NCB Bao TT</div><div class="badge" id="bNCB">0%</div></div>
+    <div class="val" id="kNCB">0<span class="u">tỷ</span></div>
+    <div class="sub-lbl">Giải ngân qua NH BTT</div></div>
+  <div class="kpi k8"><div class="top"><div class="lbl">⚠ Còn lại</div><div class="badge" id="bCL">0% HĐ</div></div>
+    <div class="val" id="kCL">0<span class="u">tỷ</span></div>
+    <div class="sub-lbl">Phải thu</div></div>
+</div>
+
+<div class="row r-1-1-1">
+  <div class="card">
+    <h3>💸 Cấu trúc thanh toán <span class="sub">Tạm ứng/IPC + NCB BTT + Còn lại</span></h3>
+    <div class="cn-bars-list" id="cnBars"></div>
+  </div>
+  <div class="card" style="grid-column:span 2">
+    <h3>📊 So sánh chi tiết <span class="sub">SL vs DNTT vs Tạm ứng/IPC vs NCB BTT</span></h3>
+    <div style="position:relative;height:280px"><canvas id="mainChart"></canvas></div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>📋 Bảng tổng hợp chi tiết <span class="sub" id="tblSub">6 dự án × hợp đồng</span></h3>
+  <div class="tbl-wrap">
+    <table class="tbl-premium" id="tbl">
+      <thead>
+        <tr>
+          <th rowspan="2" style="text-align:left">Dự án / HĐ</th>
+          <th colspan="3" class="sec-sl">SẢN LƯỢNG</th>
+          <th colspan="5" class="sec-cn">CÔNG NỢ</th>
+          <th colspan="3" class="col-claim">⚡ CLAIM</th>
+          <th colspan="4" class="sec-thu">THANH TOÁN CHI TIẾT</th>
+        </tr>
+        <tr>
+          <th>HĐ+PL</th><th>SL</th><th>%SL</th>
+          <th>Đã DNTT</th>
+          <th>Đã TT</th>
+          <th>NCB BTT</th>
+          <th>Công nợ<br>còn lại</th><th>%CN<br>còn/ĐNTT</th>
+          <th class="col-claim">Đã Claim<br>(LKHS)</th>
+          <th class="col-claim">%Claim<br>(LKHS/SL)</th><th class="col-claim">🚨 SL<br>chưa</th>
+          <th>Tạm ứng/IPC</th><th>%TH</th><th>NCB BTT</th><th>%TH</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot></tfoot>
+    </table>
+  </div>
+</div>
+
+<div class="foot">📂 Nguồn: Google Sheets <b>Cen_Cong no PQ_08.05.2026_update</b> • Sheet 0.0 + 0.2 • QS/PD Lê Cảnh — Ccons</div>
+
+</div>
+<script>
+let DATA = {"projects": [{"roman": "I", "name": "Bệnh Viện An Thới", "hd_pl": 274479255601, "sl_total": 276515384051.2784, "sl_2025": 268462028003.27838, "sl_2026_t18": 7242897843, "sl_t19": 810458205, "contracts": [{"no": "HĐ 15/2025/NDC-CENTRAL", "base": "15/2025", "project_name": "Bệnh Viện An Thới", "contractor": "CENTRAL", "item_name": "Thi công kết cấu và hoàn thiện thô (BV)", "hd_pl": 111200265166, "sl_total": 111200265166.2784, "sl_2025": 111200265166.2784, "sl_2026_t18": 0, "sl_t19": 0, "dntt": 91821317816.64, "datt": 61677906139.64, "ncb": 13170269196.400002, "conlai": 16973142480.599998, "gn_total": 74848175336.04001}, {"no": "HĐ 88/2025/NDC/CENTRAL", "base": "88/2025", "project_name": "Bệnh Viện An Thới", "contractor": "CENTRAL", "item_name": "Thi công hoàn thiện khu BOH (BV)", "hd_pl": 16321012582, "sl_total": 16321012582, "sl_2025": 16263223716, "sl_2026_t18": 57788866, "sl_t19": 0, "dntt": 12082564236, "datt": 4896025991, "ncb": 2977220023, "conlai": 4209318222, "gn_total": 7873246014}, {"no": "HĐ 123/2025/NDC/CENTRAL", "base": "123/2025", "project_name": "Bệnh Viện An Thới", "contractor": "CENTRAL", "item_name": "Thi công hoàn thiện khu FOH (BV)", "hd_pl": 25771201110, "sl_total": 25771201110, "sl_2025": 25550150599, "sl_2026_t18": 221050511, "sl_t19": 0, "dntt": 18158407451, "datt": 7480622236, "ncb": 10410831940, "conlai": 266953275, "gn_total": 17891454176}, {"no": "HĐ 46/2025/HĐ/NDC-CTR", "base": "46/2025", "project_name": "Bệnh Viện An Thới", "contractor": "CENTRAL", "item_name": "Cung cấp, thi công hệ thống MEP (BV)", "hd_pl": 104912145588, "sl_total": 106938111050, "sl_2025": 99642244648, "sl_2026_t18": 6485408197, "sl_t19": 810458205, "dntt": 70382681074, "datt": 38939155814, "ncb": 27191122892.2, "conlai": 4252402367.799999, "gn_total": 66130278706.2}, {"no": "HĐ 09/2025/HĐ/PQD-CTR", "base": "09/2025", "project_name": "Bệnh Viện An Thới", "contractor": "CENTRAL", "item_name": "Cung cấp, thi công hệ thống PCCC (BV)", "hd_pl": 16274631155, "sl_total": 16284794143, "sl_2025": 15806143874, "sl_2026_t18": 478650269, "sl_t19": 0, "dntt": 9241585129, "datt": 6400384674, "ncb": 0, "conlai": 2841200455, "gn_total": 6400384674}], "dntt": 201686555706.64, "datt": 119394094854.64, "ncb": 53749444051.600006, "conlai": 28543016800.4, "tamung": 89314060133, "ipc_claim": 112372495573.64, "gn_total": 173143538906.24, "lkhs": 214659327371.84}, {"roman": "II", "name": "Khu Shophouse Bãi Tây (2B)", "hd_pl": 156855397786, "sl_total": 134170330720, "sl_2025": 127523688021, "sl_2026_t18": 6646642699, "sl_t19": 0, "contracts": [{"no": "HĐ 092/2025/HĐ/PCC-CENTRAL", "base": "092/2025", "project_name": "Khu Shophouse Bãi Tây (2B)", "contractor": "CENTRAL", "item_name": "Thi công phần thô kết cấu MICE", "hd_pl": 156855397786, "sl_total": 134170330720, "sl_2025": 127523688021, "sl_2026_t18": 6646642699, "sl_t19": 0, "dntt": 104574632200, "datt": 51714347737, "ncb": 48254144490.2, "conlai": 4606139972.799999, "gn_total": 99968492227.2}], "dntt": 104574632200, "datt": 51714347737, "ncb": 48254144490.2, "conlai": 4606139972.799999, "gn_total": 99968492227.2, "lkhs": 96380021440}, {"roman": "III", "name": "Premier Đá Trào - The Sailing Bay", "hd_pl": 17947195748, "sl_total": 17947195748, "sl_2025": 17130391712.489998, "sl_2026_t18": 816804035.5100002, "sl_t19": 0, "contracts": [{"no": "HĐ 102/2025/HĐ/PCC-CENTRAL", "base": "102/2025", "project_name": "Premier Đá Trào - The Sailing Bay", "contractor": "CENTRAL", "item_name": "Thi công phần thô kết cấu Mũi Thuyền", "hd_pl": 17947195748, "sl_total": 17947195748, "sl_2025": 17130391712.489998, "sl_2026_t18": 816804035.5100002, "sl_t19": 0, "dntt": 9557314465, "datt": 4394436856, "ncb": 4712074338.6, "conlai": 450803270.39999986, "gn_total": 9106511194.6}], "dntt": 9557314465, "datt": 4394436856, "ncb": 4712074338.6, "conlai": 450803270.39999986, "gn_total": 9106511194.6, "lkhs": 8062006467}, {"roman": "V", "name": "Khu đô thị Gateway", "hd_pl": 429618277813, "sl_total": 408092515739, "sl_2025": 289042204330, "sl_2026_t18": 109299010571, "sl_t19": 9751300838, "contracts": [{"no": "HĐ 093/2025/HĐ/PCC-CENTRAL", "base": "093/2025", "project_name": "Khu đô thị Gateway", "contractor": "CENTRAL", "item_name": "Thi công phần thô kết cấu Sunhome 3", "hd_pl": 348288456343, "sl_total": 349985354955, "sl_2025": 269764533018, "sl_2026_t18": 78048366929, "sl_t19": 2172455008, "dntt": 255670184356.91998, "datt": 103108540727, "ncb": 123971197824.6, "conlai": 28590445805.32, "gn_total": 227079738551.6}, {"no": "HĐ 219/2025/HĐ/NDC-CTR", "base": "219/2025", "project_name": "Khu đô thị Gateway", "contractor": "CENTRAL", "item_name": "Cung cấp, thi công lắp đặt hệ thống Mep (Block 3,1 & Tầng hầm)", "hd_pl": 61248542508, "sl_total": 41664946186, "sl_2025": 12605568792, "sl_2026_t18": 21795213233, "sl_t19": 7264164161, "dntt": 23419300849, "datt": 12267116846, "ncb": 6663380873, "conlai": 4488803130, "gn_total": 18930497719}, {"no": "HĐ 369/2025/HĐ/PQC-CTR", "base": "369/2025", "project_name": "Khu đô thị Gateway", "contractor": "CENTRAL", "item_name": "Cung cấp, thi công lắp đặt hệ thống PCCC (Block 3,1 & Tầng hầm)", "hd_pl": 20081278962, "sl_total": 16442214598, "sl_2025": 6672102520, "sl_2026_t18": 9455430409, "sl_t19": 314681669, "dntt": 8925866739, "datt": 5920926221, "ncb": 0, "conlai": 3004940518, "gn_total": 5920926221}], "dntt": 288015351944.92, "datt": 121296583794, "ncb": 130634578697.6, "conlai": 35352319216.32, "gn_total": 251931162491.6, "lkhs": 308193815097}, {"roman": "VI", "name": "Cáp treo và Quần thể vui chơi giải trí biển Hòn Thơm - Phú Quốc (Làng Tây)", "hd_pl": 172655699313, "sl_total": 90096964064, "sl_2025": 80670256983, "sl_2026_t18": 8878094907, "sl_t19": 548612174, "contracts": [{"no": "HĐ  118/2025/HĐ/PCC-CTR", "base": "118/2025", "project_name": "Cáp treo và Quần thể vui chơi giải trí biển Hòn Thơm - Phú Quốc (Làng Tây)", "contractor": "CENTRAL", "item_name": "Cung cấp, thi công hệ thống MEP 4 Block mặt biển", "hd_pl": 157521999598, "sl_total": 81557204209, "sl_2025": 73803509898, "sl_2026_t18": 7286255498, "sl_t19": 467438813, "dntt": 55610702126, "datt": 47256599880, "ncb": 7830116647, "conlai": 523985599, "gn_total": 55086716527}, {"no": "HĐ 158/2025/HĐ/PQC-CTR", "base": "158/2025", "project_name": "Cáp treo và Quần thể vui chơi giải trí biển Hòn Thơm - Phú Quốc (Làng Tây)", "contractor": "CENTRAL", "item_name": "Cung cấp, thi công hệ thống PCCC 4 Block mặt biển", "hd_pl": 15133699715, "sl_total": 8539759855, "sl_2025": 6866747085, "sl_2026_t18": 1591839409, "sl_t19": 81173361, "dntt": 4180850447, "datt": 3109534275, "ncb": 0, "conlai": 1071316172, "gn_total": 3109534275}], "dntt": 59791552573, "datt": 50366134155, "ncb": 7830116647, "conlai": 1595301771, "gn_total": 58196250802, "lkhs": 36199339260}, {"roman": "VII", "name": "Sunset Town High - Rise", "hd_pl": 636166959979, "sl_total": 192502360013, "sl_2025": 41233479139, "sl_2026_t18": 141968890944, "sl_t19": 9299989930, "contracts": [{"no": "333A/2025/HĐ/PCC-CENTRAL", "base": "333A/2025", "project_name": "Sunset Town High - Rise", "contractor": "CENTRAL", "item_name": "Thi công phần thô kết cấu Block 4.6 4.7", "hd_pl": 423990257843, "sl_total": 178502360013, "sl_2025": 41233479139, "sl_2026_t18": 130968890944, "sl_t19": 6299989930, "dntt": 190842636401, "datt": 133803324602, "ncb": 57039311799, "conlai": 0, "gn_total": 190842636401}, {"no": "35/2026/HĐ/NDC-CENTRAL", "base": "35/2026", "project_name": "Sunset Town High - Rise", "contractor": "CENTRAL", "item_name": "Thi công phần thô kết cấu Block 4.5", "hd_pl": 212176702136, "sl_total": 14000000000, "sl_2025": 0, "sl_2026_t18": 11000000000, "sl_t19": 3000000000, "dntt": 57046763392, "datt": 30000000000, "ncb": 0, "conlai": 27046763392, "gn_total": 30000000000, "lkhs": 0}], "dntt": 247889399793, "datt": 163803324602, "ncb": 57039311799, "conlai": 27046763392, "gn_total": 220842636401, "lkhs": 192502360013}], "sl_total": {"hd_pl": 1687722786240, "sl_total": 1119324750335.2783, "sl_t19": 20410361147, "sl_2026_t18": 274852340999.51, "sl_2025": 824062048188.7683}, "cn_total": {"dntt": 911514806682.56, "datt": 510968921998.64, "ncb": 302219670024, "conlai": 98326214659.92001, "lkhs": 855996869648.84}};
+
+const fmt = n => (n||0).toLocaleString('vi-VN',{maximumFractionDigits:0});
+const fmtB = n => ((n||0)/1e9).toLocaleString('vi-VN',{maximumFractionDigits:1});
+Chart.defaults.font.family = "'Inter',-apple-system,sans-serif";
+Chart.defaults.font.size = 10;
+Chart.defaults.color = '#4a5578';
+if(window.ChartDataLabels) Chart.register(ChartDataLabels);
+
+let mainChart = null;
+let curProject = 'all', curContract = 'all';
+
+const LKHS_FB = {'I':214659327371.84,'II':96380021440,'III':8062006467,'V':308193815097,'VI':36199339260,'VII':192502360013};
+function claimVal(it){
+  if(it.lkhs === 0) return 0;
+  if(it.lkhs != null && it.lkhs > 0) return it.lkhs;
+  if(it.roman && LKHS_FB[it.roman]) return LKHS_FB[it.roman];
+  return it.ipc_claim || 0;
+}
+function claimStatus(sl, claimed){
+  if(!sl) return {key:'normal', label:'—'};
+  const pct = claimed/sl*100;
+  if(pct >= 90) return {key:'ok', label:'KỊP'};
+  if(pct >= 75) return {key:'normal', label:'TỐT'};
+  if(pct >= 60) return {key:'slow', label:'CHẬM'};
+  return {key:'critical', label:'TỚI HẠN'};
+}
+
+function initSlicers(){
+  const slcP = document.getElementById('slcProject');
+  slcP.innerHTML = '<option value="all">Tất cả dự án (' + DATA.projects.length + ')</option>';
+  DATA.projects.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.roman;
+    const sn = p.name.length>34?p.name.substr(0,34)+'…':p.name;
+    opt.textContent = p.roman + '. ' + sn;
+    slcP.appendChild(opt);
+  });
+  updateContractSlicer();
+}
+function updateContractSlicer(){
+  const slcC = document.getElementById('slcContract');
+  slcC.innerHTML = '<option value="all">Tất cả hợp đồng</option>';
+  if(curProject === 'all'){
+    let total = 0;
+    DATA.projects.forEach(p => p.contracts.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = p.roman + '|' + c.no;
+      opt.textContent = p.roman + '. ' + (c.no.length>30?c.no.substr(0,30)+'…':c.no);
+      slcC.appendChild(opt); total++;
+    }));
+    slcC.options[0].textContent = 'Tất cả hợp đồng (' + total + ')';
+  } else {
+    const proj = DATA.projects.find(p=>p.roman===curProject);
+    if(proj){
+      proj.contracts.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = proj.roman + '|' + c.no;
+        opt.textContent = c.no.length>40?c.no.substr(0,40)+'…':c.no;
+        slcC.appendChild(opt);
+      });
+      slcC.options[0].textContent = 'Tất cả hợp đồng (' + proj.contracts.length + ')';
+    }
+  }
+}
+
+function getView(){
+  if(curProject === 'all' && curContract === 'all'){
+    const items = DATA.projects.map(p => Object.assign({}, p, {
+      label: p.roman + '. ' + p.name,
+      shortLabel: p.name.length>14?p.name.substr(0,14)+'…':p.name
+    }));
+    return {items, total:DATA.sl_total, cn_total:DATA.cn_total, scope:'projects'};
+  }
+  if(curProject !== 'all' && curContract === 'all'){
+    const proj = DATA.projects.find(p=>p.roman===curProject);
+    if(!proj) return {items:[], total:{}, cn_total:{}, scope:'contracts'};
+    const items = proj.contracts.map(c => Object.assign({}, c, {
+      label: c.no, shortLabel: c.no.length>14?c.no.substr(0,14)+'…':c.no, roman: proj.roman
+    }));
+    return {items,
+      total:{hd_pl:proj.hd_pl, sl_total:proj.sl_total, sl_t19:proj.sl_t19, sl_2026_t18:proj.sl_2026_t18, sl_2025:proj.sl_2025},
+      cn_total:{dntt:proj.dntt, datt:proj.datt, ncb:proj.ncb, conlai:proj.conlai, tamung:proj.tamung||0, ipc_claim:proj.ipc_claim||0, lkhs:proj.lkhs||0},
+      scope:'contracts'};
+  }
+  const parts = curContract.split('|');
+  const proj = DATA.projects.find(p=>p.roman===parts[0]);
+  const contract = proj?proj.contracts.find(c=>c.no===parts[1]):null;
+  if(!contract) return {items:[], total:{}, cn_total:{}, scope:'contract'};
+  const items = [Object.assign({}, contract, {
+    label:contract.no, shortLabel:contract.no.length>14?contract.no.substr(0,14)+'…':contract.no, roman: proj.roman
+  })];
+  return {items,
+    total:{hd_pl:contract.hd_pl, sl_total:contract.sl_total, sl_t19:contract.sl_t19, sl_2026_t18:contract.sl_2026_t18, sl_2025:contract.sl_2025},
+    cn_total:{dntt:contract.dntt, datt:contract.datt, ncb:contract.ncb, conlai:contract.conlai, tamung:contract.tamung||0, ipc_claim:contract.ipc_claim||0, lkhs:contract.lkhs||0},
+    scope:'contract'};
+}
+
+function renderAll(){
+  const view = getView();
+  const T = view.total, CT = view.cn_total;
+  
+  // Banner stats
+  document.getElementById('bsHD').innerText = fmtB(T.hd_pl)+'t';
+  document.getElementById('bsSL').innerText = fmtB(T.sl_total)+'t';
+  document.getElementById('bsPCT').innerText = (T.hd_pl?(T.sl_total/T.hd_pl*100):0).toFixed(1)+'%';
+  document.getElementById('bsT19').innerText = fmtB(T.sl_t19)+'t';
+  document.getElementById('bcDN').innerText = fmtB(CT.dntt)+'t';
+  document.getElementById('bcTH').innerText = fmtB((CT.datt||0)+(CT.ncb||0))+'t';
+  document.getElementById('bcPCT').innerText = (CT.dntt?((CT.datt+CT.ncb)/CT.dntt*100):0).toFixed(1)+'%';
+  document.getElementById('bcCL').innerText = fmtB(CT.conlai)+'t';
+  
+  const totClaimedSum = view.items.reduce((s,it)=>s+claimVal(it),0);
+  const totUnclaimed = view.items.reduce((s,it)=>s+Math.max(0,it.sl_total-claimVal(it)),0);
+  document.getElementById('bClSL').innerText = fmtB(T.sl_total)+'t';
+  document.getElementById('bClIPC').innerText = fmtB(totClaimedSum)+'t';
+  document.getElementById('bClPct').innerText = (T.sl_total?(totClaimedSum/T.sl_total*100):0).toFixed(1)+'%';
+  document.getElementById('bClUC').innerText = fmtB(totUnclaimed)+'t';
+  
+  // Meta
+  document.getElementById('metaDA').innerText = (curProject==='all') ? DATA.projects.length : 1;
+  document.getElementById('metaHD').innerText = (curContract!=='all') ? 1 : 
+    (curProject==='all' ? DATA.projects.reduce((s,p)=>s+p.contracts.length,0) : (DATA.projects.find(p=>p.roman===curProject)||{contracts:[]}).contracts.length);
+  document.getElementById('metaTotal').innerText = fmtB(T.hd_pl||0)+'t';
+  
+  // KPIs Sản lượng
+  document.getElementById('kHDPL').innerHTML = fmtB(T.hd_pl) + '<span class="u">tỷ</span>';
+  document.getElementById('kHDsub').innerText = view.scope==='projects' ? view.items.length+' dự án' : (view.scope==='contracts' ? view.items.length+' hợp đồng' : '1 hợp đồng');
+  document.getElementById('kSL').innerHTML = fmtB(T.sl_total) + '<span class="u">tỷ</span>';
+  const pctSL = T.hd_pl?(T.sl_total/T.hd_pl*100):0;
+  document.getElementById('bSL').innerText = pctSL.toFixed(1)+'%';
+  document.getElementById('trkSL').style.width = pctSL.toFixed(1)+'%';
+  document.getElementById('slConL').innerText = fmtB(T.hd_pl-T.sl_total)+'t';
+  document.getElementById('kSL2026').innerHTML = fmtB((T.sl_2026_t18||0)+(T.sl_t19||0)) + '<span class="u">tỷ</span>';
+  document.getElementById('kSLW').innerHTML = fmtB(T.sl_t19) + '<span class="u">tỷ</span>';
+  
+  // KPIs Claim
+  document.getElementById('kcTU').innerHTML = fmtB(CT.tamung||0) + '<span class="u">tỷ</span>';
+  document.getElementById('bcTU').innerText = CT.dntt?(CT.tamung/CT.dntt*100).toFixed(1)+'% DNTT':'—';
+  document.getElementById('trkTU').style.width = CT.dntt?(CT.tamung/CT.dntt*100).toFixed(1)+'%':'0%';
+  document.getElementById('kcIPC').innerHTML = fmtB(totClaimedSum) + '<span class="u">tỷ</span>';
+  document.getElementById('bcIPC').innerText = T.sl_total?(totClaimedSum/T.sl_total*100).toFixed(1)+'% SL':'—';
+  document.getElementById('trkIPC').style.width = T.sl_total?(totClaimedSum/T.sl_total*100).toFixed(1)+'%':'0%';
+  document.getElementById('kcNCB').innerHTML = fmtB(CT.ncb||0) + '<span class="u">tỷ</span>';
+  document.getElementById('bcNCBp').innerText = CT.dntt?(CT.ncb/CT.dntt*100).toFixed(1)+'% DNTT':'—';
+  document.getElementById('trkNCB').style.width = CT.dntt?(CT.ncb/CT.dntt*100).toFixed(1)+'%':'0%';
+  document.getElementById('kcUC').innerHTML = fmtB(totUnclaimed) + '<span class="u">tỷ</span>';
+  document.getElementById('bcUC').innerText = T.sl_total?(totUnclaimed/T.sl_total*100).toFixed(1)+'% SL':'—';
+  document.getElementById('trkUC').style.width = T.sl_total?(totUnclaimed/T.sl_total*100).toFixed(1)+'%':'0%';
+  
+  // KPIs Công nợ
+  document.getElementById('kDNTT').innerHTML = fmtB(CT.dntt) + '<span class="u">tỷ</span>';
+  document.getElementById('bDN').innerText = T.sl_total?(CT.dntt/T.sl_total*100).toFixed(1)+'% SL':'—';
+  document.getElementById('kDTT').innerHTML = fmtB(CT.datt) + '<span class="u">tỷ</span>';
+  document.getElementById('bDT').innerText = CT.dntt?(CT.datt/CT.dntt*100).toFixed(1)+'%':'—';
+  document.getElementById('kNCB').innerHTML = fmtB(CT.ncb) + '<span class="u">tỷ</span>';
+  document.getElementById('bNCB').innerText = CT.dntt?(CT.ncb/CT.dntt*100).toFixed(1)+'%':'—';
+  document.getElementById('kCL').innerHTML = fmtB(CT.conlai) + '<span class="u">tỷ</span>';
+  document.getElementById('bCL').innerText = T.hd_pl?(CT.conlai/T.hd_pl*100).toFixed(1)+'% HĐ':'—';
+  
+  // SL Bars
+  const slBars = document.getElementById('slBars');
+  slBars.innerHTML = '';
+  view.items.forEach(it => {
+    const pct = it.hd_pl?(it.sl_total/it.hd_pl*100):0;
+    let cls = 'crit';
+    if(pct>=95) cls='high'; else if(pct>=80) cls='mid'; else if(pct>=50) cls='low';
+    const sn = it.label.length>26?it.label.substr(0,26)+'…':it.label;
+    slBars.insertAdjacentHTML('beforeend','<div class="bar-r b-'+cls+'">'+
+      '<div class="top"><div class="nm" title="'+it.label+'">'+sn+'</div>'+
+      '<div class="pct-num">'+pct.toFixed(1)+'%</div></div>'+
+      '<div class="bg"><div class="fill '+cls+'" style="width:'+Math.min(pct,100)+'%"></div></div>'+
+      '<div class="vals"><b>'+fmtB(it.sl_total)+'t</b> / '+fmtB(it.hd_pl)+'t HĐ</div>'+
+      '</div>');
+  });
+  
+  // Claim cards radial gauge
+  const claimGrid = document.getElementById('claimGrid');
+  claimGrid.innerHTML = '';
+  let slowCount = 0, criticalCount = 0;
+  const RADIUS = 38, CIRC = 2 * Math.PI * RADIUS;
+  view.items.forEach(it => {
+    const claimedV = claimVal(it);
+    const status = claimStatus(it.sl_total, claimedV);
+    const pct = it.sl_total?(claimedV/it.sl_total*100):0;
+    const unclaimed = Math.max(0, it.sl_total - claimedV);
+    if(status.key==='slow') slowCount++;
+    if(status.key==='critical') criticalCount++;
+    // Project name without "I. " prefix; show full name
+    const projName = it.roman ? it.label.replace(/^[IVXLCDM]+\.\s*/,'') : it.label;
+    const dashLen = (Math.min(pct,100)/100) * CIRC;
+    const ico = status.key==='ok'?'✓':(status.key==='normal'?'◐':(status.key==='slow'?'⏰':'⚠'));
+    const romanBadge = it.roman ? '<div class="roman-badge">'+it.roman+'</div>' : '';
+    claimGrid.insertAdjacentHTML('beforeend','<div class="claim-card s-'+status.key+'">'+
+      romanBadge+
+      '<div class="gauge"><svg viewBox="0 0 96 96">'+
+        '<circle class="gauge-bg" cx="48" cy="48" r="'+RADIUS+'"/>'+
+        '<circle class="gauge-fill" cx="48" cy="48" r="'+RADIUS+'" stroke-dasharray="'+dashLen+' '+CIRC+'"/>'+
+      '</svg><div class="gauge-center"><span class="gauge-pct">'+pct.toFixed(0)+'%</span><span class="gauge-lbl">Claim</span></div></div>'+
+      '<div class="body">'+
+        '<div class="nm" title="'+it.label+'">'+projName+'</div>'+
+        '<div class="stats">'+
+          '<div class="r"><span class="l">📐 Sản lượng</span><span class="v">'+fmtB(it.sl_total)+'t</span></div>'+
+          '<div class="r"><span class="l">✅ Đã Claim</span><span class="v">'+fmtB(claimedV)+'t</span></div>'+
+          '<div class="r unclaim"><span class="l">⏳ Chưa Claim</span><span class="v">'+fmtB(unclaimed)+'t</span></div>'+
+        '</div>'+
+        '<div class="badge-status"><span>'+ico+'</span><span>'+status.label+'</span></div>'+
+      '</div></div>');
+  });
+  
+  // Claim summary
+  document.getElementById('claimUnclaimed').innerHTML = fmtB(totUnclaimed) + '<small> tỷ ₫</small>';
+  let summaryText;
+  if(criticalCount > 0){
+    summaryText = '<b>'+criticalCount+' dự án TỚI HẠN</b>'+(slowCount?' + <b>'+slowCount+' CHẬM</b>':'')+'. Tổng <b>'+fmtB(totUnclaimed)+' tỷ ₫</b> sản lượng đã thi công nhưng <b>chưa lập hồ sơ Claim (LKHS)</b> — ~'+(totUnclaimed/T.sl_total*100).toFixed(1)+'% SL bị "đóng băng" tại công trường.';
+    document.getElementById('claimSummaryHead').innerText = '🚨 SL chưa Claim — đóng băng dòng tiền';
+  } else if(slowCount > 0){
+    summaryText = '<b>'+slowCount+' dự án CHẬM</b>. Tổng <b>'+fmtB(totUnclaimed)+' tỷ ₫</b> chưa lập hồ sơ Claim — cần đẩy nhanh hồ sơ kỹ thuật.';
+    document.getElementById('claimSummaryHead').innerText = '⚠️ SL chưa Claim — cần đẩy hồ sơ';
+  } else {
+    summaryText = 'Tốc độ Claim tốt. SL chưa Claim chỉ <b>'+fmtB(totUnclaimed)+' tỷ ₫</b>.';
+    document.getElementById('claimSummaryHead').innerText = '✅ Tốc độ Claim ổn';
+  }
+  document.getElementById('claimSummaryBody').innerHTML = summaryText;
+  
+  // CN Bars
+  const cnBars = document.getElementById('cnBars');
+  cnBars.innerHTML = '';
+  view.items.forEach(it => {
+    const t = it.dntt + it.conlai || 1;
+    const pPaid = (it.datt/t)*100, pNcb = (it.ncb/t)*100, pLeft = (it.conlai/t)*100;
+    const sn = it.label.length>22?it.label.substr(0,22)+'…':it.label;
+    cnBars.insertAdjacentHTML('beforeend','<div class="cn-row">'+
+      '<div class="nm" title="'+it.label+'">'+sn+'</div>'+
+      '<div class="bg">'+
+        '<div class="seg s-paid" style="width:'+pPaid+'%"></div>'+
+        '<div class="seg s-ncb" style="width:'+pNcb+'%"></div>'+
+        '<div class="seg s-left" style="width:'+pLeft+'%"></div>'+
+      '</div>'+
+      '<div class="v">'+fmtB(it.conlai)+'t</div></div>');
+  });
+  
+  renderMainChart(view);
+  renderTable(view);
+}
+
+function renderMainChart(view){
+  if(mainChart) mainChart.destroy();
+  const ctx = document.getElementById('mainChart').getContext('2d');
+  const labels = view.items.map(it => it.shortLabel);
+  mainChart = new Chart(ctx,{
+    type:'bar',
+    data:{labels:labels,
+      datasets:[
+        {label:'HĐ+PL', data:view.items.map(it=>it.hd_pl/1e9), backgroundColor:'rgba(99,102,241,.18)', borderColor:'#6366f1', borderWidth:2, borderRadius:5,
+          datalabels:{color:'#4338ca',anchor:'end',align:'top',font:{size:9,weight:'700'},formatter:v=>v>10?v.toFixed(0):v.toFixed(1)}},
+        {label:'Sản lượng', data:view.items.map(it=>it.sl_total/1e9), backgroundColor:'rgba(16,185,129,.65)', borderColor:'#10b981', borderWidth:2, borderRadius:5,
+          datalabels:{color:'#065f46',anchor:'end',align:'top',font:{size:9,weight:'700'},formatter:v=>v>10?v.toFixed(0):v.toFixed(1)}},
+        {label:'DNTT', data:view.items.map(it=>it.dntt/1e9), backgroundColor:'rgba(6,182,212,.65)', borderColor:'#06b6d4', borderWidth:2, borderRadius:5,
+          datalabels:{color:'#0e7490',anchor:'end',align:'top',font:{size:9,weight:'700'},formatter:v=>v>10?v.toFixed(0):v.toFixed(1)}},
+        {label:'Tạm ứng/IPC', data:view.items.map(it=>it.datt/1e9), backgroundColor:'rgba(34,197,94,.7)', borderColor:'#16a34a', borderWidth:2, borderRadius:5,
+          datalabels:{color:'#15803d',anchor:'end',align:'top',font:{size:9,weight:'700'},formatter:v=>v>10?v.toFixed(0):v.toFixed(1)}},
+        {label:'NCB BTT', data:view.items.map(it=>it.ncb/1e9), backgroundColor:'rgba(168,85,247,.7)', borderColor:'#a855f7', borderWidth:2, borderRadius:5,
+          datalabels:{color:'#7c3aed',anchor:'end',align:'top',font:{size:9,weight:'700'},formatter:v=>v>10?v.toFixed(0):v.toFixed(1)}}
+      ]},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'bottom',labels:{boxWidth:10,font:{size:9.5},padding:8}},
+        tooltip:{backgroundColor:'#1a2240',padding:10,cornerRadius:8,callbacks:{label:c=>' '+c.dataset.label+': '+c.raw.toLocaleString('vi-VN',{maximumFractionDigits:1})+' tỷ ₫'}},
+        datalabels:{display:true}
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{color:'#4a5578',font:{size:9.5,weight:'600'},maxRotation:0,autoSkip:false}},
+        y:{grid:{color:'#e6eaf3'},ticks:{color:'#8b95b5',callback:v=>v+'t',font:{size:9}},
+          suggestedMax: Math.max.apply(null, view.items.map(it=>it.hd_pl/1e9))*1.15}
+      },
+      animation:{duration:900,easing:'easeOutQuart'}}
+  });
+}
+
+function tblPctBar(pct, color){
+  return '<span style="display:inline-block;width:42px;height:4px;background:#e2e8f0;border-radius:2px;margin-right:5px;vertical-align:middle;overflow:hidden"><i style="display:block;height:100%;width:'+Math.min(pct,100)+'%;background:'+color+';border-radius:2px"></i></span>';
+}
+
+function renderTable(view){
+  const tbody = document.querySelector('#tbl tbody');
+  const tfoot = document.querySelector('#tbl tfoot');
+  tbody.innerHTML = '';
+  tfoot.innerHTML = '';
+  document.getElementById('tblSub').innerText = view.scope==='projects' ? '6 dự án × hợp đồng' : 
+    (view.scope==='contracts' ? 'Hợp đồng của dự án '+curProject : 'Chi tiết 1 hợp đồng');
+  
+  if(view.scope === 'projects'){
+    DATA.projects.forEach(p=>{
+      const pctSL = (p.sl_total/p.hd_pl*100).toFixed(1);
+      const claimedV = claimVal(p);
+      const claim = claimStatus(p.sl_total, claimedV);
+      const pctClaim = (claimedV/(p.sl_total||1)*100).toFixed(1);
+      const unclaimed = Math.max(0, p.sl_total - claimedV);
+      const pctRecov = (p.gn_total/(p.dntt||1)*100).toFixed(1);
+      const slCl = pctSL>=95?'ok':(pctSL>=70?'warn':'danger');
+      const claimColor = claim.key==='ok'?'#10b981':(claim.key==='normal'?'#3b82f6':(claim.key==='slow'?'#f59e0b':'#dc2626'));
+      const conCl = p.conlai>30e9?'danger':(p.conlai>5e9?'warn':'ok');
+      const rowCl = (p.conlai>30e9 || claim.key==='critical') ? 'hl-row' : 
+                    (p.conlai>5e9||claim.key==='slow' ? 'hl-row-amber' : 
+                    (p.conlai<5e9&&claim.key==='ok' ? 'hl-row-green':''));
+      let tag = '';
+      if(claim.key==='critical') tag = '<span class="hl-tag hl-critical">CLAIM!</span>';
+      else if(p.conlai>30e9) tag = '<span class="hl-tag hl-critical">CN!</span>';
+      else if(claim.key==='slow') tag = '<span class="hl-tag hl-warning">CHẬM</span>';
+      else if(p.conlai>5e9) tag = '<span class="hl-tag hl-warning">CN</span>';
+      else if(claim.key==='ok'&&p.conlai<5e9) tag = '<span class="hl-tag hl-success">✓</span>';
+      const sn = p.name.length>30?p.name.substr(0,30)+'…':p.name;
+      tbody.insertAdjacentHTML('beforeend','<tr class="'+rowCl+'">'+
+        '<td title="'+p.name+'">'+tag+'<b>'+p.roman+'. '+sn+'</b></td>'+
+        '<td class="num"><b>'+fmtB(p.hd_pl)+'</b></td>'+
+        '<td class="num">'+fmtB(p.sl_total)+'</td>'+
+        '<td class="num '+slCl+'">'+tblPctBar(pctSL,'#10b981')+pctSL+'%</td>'+
+        '<td class="num">'+fmtB(p.dntt||0)+'</td>'+
+        '<td class="num">'+fmtB(p.datt||0)+'</td>'+
+        '<td class="num">'+fmtB(p.ncb||0)+'</td>'+
+        '<td class="num">'+fmtB(p.conlai||0)+'</td>'+
+        '<td class="num">'+tblPctBar((p.conlai/(p.dntt||1)*100).toFixed(1),'#dc2626')+(p.conlai/(p.dntt||1)*100).toFixed(1)+'%</td>'+
+        '<td class="num col-claim-cell">'+fmtB(claimedV)+'</td>'+
+        '<td class="num col-claim-cell">'+tblPctBar(pctClaim,claimColor)+pctClaim+'%</td>'+
+        '<td class="num col-claim-cell">'+fmtB(unclaimed)+'</td>'+
+        '<td class="num">'+fmtB(p.datt||0)+'</td>'+
+        '<td class="num">'+tblPctBar((p.datt/(p.dntt||1)*100).toFixed(1),'#2563eb')+(p.datt/(p.dntt||1)*100).toFixed(1)+'%</td>'+
+        '<td class="num">'+fmtB(p.ncb||0)+'</td>'+
+        '<td class="num">'+tblPctBar((p.ncb/(p.dntt||1)*100).toFixed(1),'#7c3aed')+(p.ncb/(p.dntt||1)*100).toFixed(1)+'%</td>'+
+        '</tr>');
+    });
+    const T2=DATA.sl_total, CT2=DATA.cn_total;
+    const totClaimedAll = DATA.projects.reduce((s,p)=>s+claimVal(p),0);
+    const totUnclaimedAll = DATA.projects.reduce((s,p)=>s+Math.max(0,p.sl_total-claimVal(p)),0);
+    const totClaimPct = (totClaimedAll/T2.sl_total*100).toFixed(1);
+    tfoot.innerHTML = '<tr class="tot-row">'+
+      '<td class="tot-cell">TỔNG CỘNG ('+DATA.projects.length+' DA)</td>'+
+      '<td class="num">'+fmtB(T2.hd_pl)+'</td>'+
+      '<td class="num">'+fmtB(T2.sl_total)+'</td>'+
+      '<td class="num">'+(T2.sl_total/T2.hd_pl*100).toFixed(1)+'%</td>'+
+      '<td class="num">'+fmtB(CT2.dntt)+'</td>'+
+      '<td class="num">'+fmtB(CT2.datt)+'</td>'+
+      '<td class="num">'+fmtB(CT2.ncb)+'</td>'+
+      '<td class="num">'+fmtB(CT2.conlai)+'</td>'+
+      '<td class="num">'+tblPctBar((CT2.conlai/CT2.dntt*100).toFixed(1),'#dc2626')+(CT2.conlai/CT2.dntt*100).toFixed(1)+'%</td>'+
+      '<td class="num col-claim-cell">'+fmtB(totClaimedAll)+'</td>'+
+      '<td class="num col-claim-cell">'+totClaimPct+'%</td>'+
+      '<td class="num col-claim-cell">'+fmtB(totUnclaimedAll)+'</td>'+
+      '<td class="num">'+fmtB(CT2.datt)+'</td>'+
+      '<td class="num">'+tblPctBar((CT2.datt/CT2.dntt*100).toFixed(1),'#2563eb')+(CT2.datt/CT2.dntt*100).toFixed(1)+'%</td>'+
+      '<td class="num">'+fmtB(CT2.ncb)+'</td>'+
+      '<td class="num">'+tblPctBar((CT2.ncb/CT2.dntt*100).toFixed(1),'#7c3aed')+(CT2.ncb/CT2.dntt*100).toFixed(1)+'%</td>'+
+      '</tr>';
+  } else {
+    view.items.forEach(it=>{
+      const pctSL = (it.sl_total/it.hd_pl*100).toFixed(1);
+      const claimedV = claimVal(it);
+      const claim = claimStatus(it.sl_total, claimedV);
+      const pctClaim = (claimedV/(it.sl_total||1)*100).toFixed(1);
+      const unclaimed = Math.max(0, it.sl_total - claimedV);
+      const pctRecov = (it.gn_total/(it.dntt||1)*100).toFixed(1);
+      const slCl = pctSL>=95?'ok':(pctSL>=70?'warn':'danger');
+      const claimColor = claim.key==='ok'?'#10b981':(claim.key==='normal'?'#3b82f6':(claim.key==='slow'?'#f59e0b':'#dc2626'));
+      const sn = it.label.length>40?it.label.substr(0,40)+'…':it.label;
+      tbody.insertAdjacentHTML('beforeend','<tr>'+
+        '<td title="'+it.label+'"><b>'+sn+'</b></td>'+
+        '<td class="num"><b>'+fmtB(it.hd_pl)+'</b></td>'+
+        '<td class="num">'+fmtB(it.sl_total)+'</td>'+
+        '<td class="num '+slCl+'">'+tblPctBar(pctSL,'#10b981')+pctSL+'%</td>'+
+        '<td class="num">'+fmtB(it.dntt||0)+'</td>'+
+        '<td class="num">'+fmtB(it.datt||0)+'</td>'+
+        '<td class="num">'+fmtB(it.ncb||0)+'</td>'+
+        '<td class="num">'+fmtB(it.conlai||0)+'</td>'+
+        '<td class="num">'+tblPctBar((it.conlai/(it.dntt||1)*100).toFixed(1),'#dc2626')+(it.conlai/(it.dntt||1)*100).toFixed(1)+'%</td>'+
+        '<td class="num col-claim-cell">'+fmtB(claimedV)+'</td>'+
+        '<td class="num col-claim-cell">'+tblPctBar(pctClaim,claimColor)+pctClaim+'%</td>'+
+        '<td class="num col-claim-cell">'+fmtB(unclaimed)+'</td>'+
+        '<td class="num">'+fmtB(it.datt||0)+'</td>'+
+        '<td class="num">'+tblPctBar((it.datt/(it.dntt||1)*100).toFixed(1),'#2563eb')+(it.datt/(it.dntt||1)*100).toFixed(1)+'%</td>'+
+        '<td class="num">'+fmtB(it.ncb||0)+'</td>'+
+        '<td class="num">'+tblPctBar((it.ncb/(it.dntt||1)*100).toFixed(1),'#7c3aed')+(it.ncb/(it.dntt||1)*100).toFixed(1)+'%</td>'+
+        '</tr>');
+    });
+  }
+}
+
+// EVENTS
+document.getElementById('slcProject').addEventListener('change', e=>{
+  curProject=e.target.value; curContract='all'; updateContractSlicer(); renderAll();
+});
+document.getElementById('slcContract').addEventListener('change', e=>{
+  curContract=e.target.value;
+  if(curContract!=='all'){
+    const parts=curContract.split('|');
+    if(curProject==='all'){curProject=parts[0]; document.getElementById('slcProject').value=parts[0]; updateContractSlicer(); document.getElementById('slcContract').value=curContract;}
+  }
+  renderAll();
+});
+document.getElementById('btnClear').addEventListener('click', ()=>{
+  curProject='all'; curContract='all';
+  document.getElementById('slcProject').value='all'; updateContractSlicer(); renderAll();
+});
+
+// GSHEET sync
+function extractSheetId(url){const m=String(url||'').match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);return m?m[1]:null;}
+function setStatus(cls,text){const s=document.getElementById('tbStatus');s.className='tb-status '+cls;document.getElementById('tbStatusText').innerText=text;}
+function baseNo(s){if(!s)return null;const m=String(s).toUpperCase().match(/(\d{1,3}[A-Z]?)\s*\/\s*(\d{4})/);return m?m[1]+'/'+m[2]:String(s).trim();}
+function classifyRow(nd){if(!nd)return 'OTHER';const s=String(nd).toUpperCase().trim();if(s.indexOf('IPC')===0||s.indexOf('HD TT')===0||s.indexOf('HĐ TT')===0)return 'IPC';if(s.indexOf('TẠM ỨNG')>=0||s.startsWith('PL'))return 'TAMUNG';return 'OTHER';}
+
+function parseWorkbook(wb){
+  const sl=wb.Sheets['0.0_BC sản lượng'], cn=wb.Sheets['0.2_Công nợ'];
+  if(!sl) throw new Error('Thiếu sheet 0.0');
+  if(!cn) throw new Error('Thiếu sheet 0.2');
+  const slR=XLSX.utils.sheet_to_json(sl,{header:1,defval:null});
+  const cnR=XLSX.utils.sheet_to_json(cn,{header:1,defval:null});
+
+  // Tìm column index của "LŨY KẾ SẢN LƯỢNG HỒ SƠ" trong header (rows 1-6)
+  let lkhsCol = 11; // fallback to col L (index 11)
+  for(let i=0;i<Math.min(slR.length,8);i++){
+    const r = slR[i] || [];
+    for(let c=0;c<r.length;c++){
+      const v = String(r[c]||'').trim().toUpperCase();
+      if(v.indexOf('LŨY KẾ SẢN LƯỢNG HỒ SƠ')>=0 || v.indexOf('LUY KE SAN LUONG HO SO')>=0){
+        lkhsCol = c;
+        console.log('LKHS column detected at index', c, '(col '+String.fromCharCode(65+c)+')');
+        break;
+      }
+    }
+  }
+
+  const ROMAN=['I','II','III','IV','V','VI','VII','VIII','IX','X'];
+  const slP=[]; let cur=null;
+  for(let i=0;i<slR.length;i++){
+    const r=slR[i];
+    if(ROMAN.indexOf(r[0])>=0){
+      if(cur) slP.push(cur);
+      cur={roman:r[0],name:String(r[1]||'').trim(),hd_pl:+r[5]||0,sl_total:+r[9]||0,sl_2025:+r[6]||0,sl_2026_t18:+r[7]||0,sl_t19:+r[8]||0,lkhs:+r[lkhsCol]||0,contracts:[]};
+    } else if(typeof r[0]==='number'&&cur&&r[1]){
+      cur.contracts.push({no:String(r[1]).trim(),base:baseNo(r[1]),hd_pl:+r[5]||0,sl_total:+r[9]||0,sl_2025:+r[6]||0,sl_2026_t18:+r[7]||0,sl_t19:+r[8]||0,lkhs:+r[lkhsCol]||0});
+    }
+  }
+  if(cur) slP.push(cur);
+  
+  const cnByP={}, cnByC={};
+  let curP=null, curB=null;
+  for(let i=0;i<cnR.length;i++){
+    const r=cnR[i];
+    const stt=r[2], soHd=r[3], nd=r[4];
+    if(nd && String(nd).toUpperCase().indexOf('TỔNG')>=0) continue;
+    if(typeof stt==='number' && stt>=1 && stt<=10){
+      curP=stt; curB=soHd?baseNo(soHd):null;
+      if(!cnByP[curP]) cnByP[curP]={dntt:+r[7]||0,datt:+r[8]||0,ncb:+r[9]||0,conlai:+r[10]||0,tamung:0,ipc_claim:0};
+      if(curB){const k=curP+'|'+curB; if(!cnByC[k]) cnByC[k]={dntt:0,datt:0,ncb:0,conlai:0,tamung:0,ipc_claim:0};}
+      continue;
+    }
+    if(soHd){curB=baseNo(soHd); const k=curP+'|'+curB; if(!cnByC[k]) cnByC[k]={dntt:0,datt:0,ncb:0,conlai:0,tamung:0,ipc_claim:0};}
+    if(curP===null||curB===null) continue;
+    const k=curP+'|'+curB;
+    if(!cnByC[k]) continue;
+    cnByC[k].dntt+=+r[7]||0; cnByC[k].datt+=+r[8]||0; cnByC[k].ncb+=+r[9]||0; cnByC[k].conlai+=+r[10]||0;
+    const rt=classifyRow(nd);
+    if(rt==='TAMUNG'){cnByC[k].tamung+=+r[7]||0; cnByP[curP].tamung+=+r[7]||0;}
+    else if(rt==='IPC'){cnByC[k].ipc_claim+=+r[7]||0; cnByP[curP].ipc_claim+=+r[7]||0;}
+  }
+  const cnT={dntt:+(cnR[5]?cnR[5][7]:0)||0, datt:+(cnR[5]?cnR[5][8]:0)||0, ncb:+(cnR[5]?cnR[5][9]:0)||0, conlai:+(cnR[5]?cnR[5][10]:0)||0};
+  cnT.tamung=Object.keys(cnByP).reduce((s,k)=>s+cnByP[k].tamung,0);
+  cnT.ipc_claim=Object.keys(cnByP).reduce((s,k)=>s+cnByP[k].ipc_claim,0);
+  
+  const PM={'I':1,'II':2,'III':3,'IV':4,'V':4,'VI':5,'VII':6};
+  const merged = slP.map(function(p){
+    const cp = cnByP[PM[p.roman]] || {dntt:0,datt:0,ncb:0,conlai:0,tamung:0,ipc_claim:0};
+    const cs = p.contracts.map(function(c){
+      const cc = cnByC[PM[p.roman]+'|'+c.base] || {dntt:0,datt:0,ncb:0,conlai:0,tamung:0,ipc_claim:0};
+      return Object.assign({}, c, cc, {gn_total:cc.datt+cc.ncb});
+    });
+    return Object.assign({}, p, cp, {gn_total:cp.datt+cp.ncb, contracts:cs});
+  });
+  
+  const slTot={hd_pl:0,sl_total:0,sl_t19:0,sl_2026_t18:0,sl_2025:0};
+  merged.forEach(function(p){
+    for(const k in slTot) slTot[k]+=p[k]||0;
+  });
+  cnT.lkhs = merged.reduce(function(s,p){return s+(p.lkhs||0);}, 0);
+  return {projects:merged, sl_total:slTot, cn_total:cnT};
+}
+
+function syncGSheet(silent){
+  const url = document.getElementById('gsUrl').value.trim();
+  const id = extractSheetId(url);
+  if(!id){setStatus('err','❌ Link không hợp lệ');return Promise.resolve(false);}
+  const eu = 'https://docs.google.com/spreadsheets/d/'+id+'/export?format=xlsx';
+  // Multiple proxies — try many to handle null origin (file:// case)
+  const attempts = [
+    {l:'Direct', u:eu+'&_ts='+Date.now()},
+    {l:'codetabs', u:'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(eu)},
+    {l:'allorigins', u:'https://api.allorigins.win/raw?url='+encodeURIComponent(eu)},
+    {l:'corsproxy', u:'https://corsproxy.io/?'+encodeURIComponent(eu)},
+    {l:'corsproxy-org', u:'https://cors-anywhere.com/'+eu},
+    {l:'thingproxy', u:'https://thingproxy.freeboard.io/fetch/'+eu}
+  ];
+  if(!silent) setStatus('','⏳ Đang sync... (' + attempts.length + ' proxies)');
+
+  return (async function(){
+    const errors = [];
+    for(let i=0;i<attempts.length;i++){
+      const a = attempts[i];
+      try{
+        if(!silent) setStatus('','⏳ Thử '+(i+1)+'/'+attempts.length+': '+a.l+'...');
+        const res = await fetch(a.u, {cache:'no-store',mode:'cors'});
+        if(!res.ok){errors.push(a.l+':HTTP'+res.status); continue;}
+        const buf = await res.arrayBuffer();
+        if(buf.byteLength<100){errors.push(a.l+':empty'); continue;}
+        const head = new Uint8Array(buf.slice(0,2));
+        if(head[0]!==0x50 || head[1]!==0x4B){errors.push(a.l+':not-xlsx'); continue;}
+        const wb = XLSX.read(buf, {type:'array',cellDates:true});
+        DATA = parseWorkbook(wb);
+        initSlicers(); curProject='all'; curContract='all'; renderAll();
+        const w = new Date().toLocaleString('vi-VN', {hour12:false});
+        const autoOn = document.getElementById('autoSync').checked;
+        const interval = autoOn ? ' · 🔁 Auto '+(document.getElementById('syncInt').options[document.getElementById('syncInt').selectedIndex].text) : '';
+        setStatus('ok', '🟢 Live ('+a.l+') · '+w+interval);
+        return true;
+      } catch(e){errors.push(a.l+':err');}
+    }
+    // All proxies failed — likely due to file:// origin
+    const isFileOrigin = location.protocol === 'file:';
+    if(isFileOrigin){
+      setStatus('err','❌ CORS chặn (file://) → Click 📂 Chọn file Excel để load thủ công');
+      // Highlight file upload button
+      const btn = document.getElementById('btnPickFile');
+      if(btn){
+        btn.style.animation = 'shakePulse 0.6s 3';
+        btn.style.background = 'linear-gradient(135deg,#f59e0b,#fbbf24)';
+        btn.style.color = '#fff';
+        btn.style.fontWeight = '800';
+        setTimeout(function(){btn.style.animation=''},2000);
+      }
+    } else {
+      setStatus('err','❌ Sync fail — '+errors.slice(0,3).join(', '));
+    }
+    console.warn('Sync failed with all proxies:', errors);
+    return false;
+  })();
+}
+document.getElementById('btnSync').addEventListener('click', function(){syncGSheet(false);});
+
+// === AUTO-SYNC real-time ===
+let autoSyncTimer = null;
+function stopAutoSync(){
+  if(autoSyncTimer){clearInterval(autoSyncTimer); autoSyncTimer=null;}
+}
+function startAutoSync(){
+  stopAutoSync();
+  const ms = parseInt(document.getElementById('syncInt').value,10) || 300000;
+  autoSyncTimer = setInterval(function(){ syncGSheet(true); }, ms);
+  const mins = (ms/60000).toFixed(0);
+  console.log('Auto-sync enabled — refresh mỗi '+mins+' phút');
+}
+document.getElementById('autoSync').addEventListener('change', function(e){
+  if(e.target.checked) startAutoSync(); else stopAutoSync();
+});
+document.getElementById('syncInt').addEventListener('change', function(){
+  if(document.getElementById('autoSync').checked) startAutoSync();
+});
+
+// File upload handler — bypass CORS by loading local xlsx directly
+document.getElementById('btnPickFile').addEventListener('click', function(){
+  document.getElementById('fileInput').click();
+});
+document.getElementById('fileInput').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  setStatus('','⏳ Đang đọc '+file.name+'...');
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    try{
+      const buf = ev.target.result;
+      const wb = XLSX.read(buf, {type:'array', cellDates:true});
+      DATA = parseWorkbook(wb);
+      initSlicers(); curProject='all'; curContract='all'; renderAll();
+      const w = new Date().toLocaleString('vi-VN', {hour12:false});
+      setStatus('ok','✅ Đã đọc '+file.name+' · '+w);
+    }catch(err){
+      setStatus('err','❌ Lỗi đọc file: '+err.message);
+      console.error(err);
+    }
+  };
+  reader.onerror = function(){setStatus('err','❌ Không đọc được file');};
+  reader.readAsArrayBuffer(file);
+});
+
+// Drag-and-drop on whole page
+document.addEventListener('dragover', function(e){e.preventDefault();});
+document.addEventListener('drop', function(e){
+  e.preventDefault();
+  const f = e.dataTransfer.files && e.dataTransfer.files[0];
+  if(f && /\.xlsx?$/i.test(f.name)){
+    document.getElementById('fileInput').files = e.dataTransfer.files;
+    document.getElementById('fileInput').dispatchEvent(new Event('change'));
+  }
+});
+
+// INIT
+initSlicers();
+renderAll();
+
+// Cảnh báo CORS khi mở từ file://
+if(location.protocol === 'file:'){
+  setStatus('','💡 Đang mở từ file:// — CORS sẽ chặn sync GSheet. Khuyên dùng nút 📂 Chọn file Excel để load số liệu chính xác.');
+  // Tự highlight nút Chọn file
+  setTimeout(function(){
+    const btn = document.getElementById('btnPickFile');
+    if(btn){
+      btn.style.background = 'linear-gradient(135deg,#fbbf24,#f59e0b)';
+      btn.style.color = '#fff';
+      btn.style.fontWeight = '800';
+      btn.style.boxShadow = '0 4px 12px rgba(245,158,11,.4)';
+    }
+  }, 200);
+}
+
+// Auto sync attempt — only works if served via http(s)://
+setTimeout(function(){
+  syncGSheet(false).then(function(ok){
+    if(ok && document.getElementById('autoSync').checked){
+      startAutoSync();
+    }
+  });
+}, 600);
+</script>
+</body>
+</html>
