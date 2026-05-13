@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — E-Commerce Portal</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: '#090A14',
+            primary: '#DF6B33',
+            'primary-hover': '#C45A26',
+            'primary-glow': 'rgba(223,107,51,0.25)',
+            card: '#111220',
+            'card-hover': '#16172a',
+            'input-bg': '#0D0E1C',
+            'input-border': '#1E2035',
+            'text-primary': '#F0F0F0',
+            'text-secondary': '#8B8C9E',
+            'text-muted': '#55566E',
+            divider: '#1E2035',
+          },
+          fontFamily: {
+            poppins: ['Poppins', 'sans-serif'],
+            inter: ['Inter', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #090A14;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.12;
+      animation: orbFloat 8s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, #DF6B33, transparent 70%); top: -200px; left: -200px; animation-delay: 0s; }
+    .orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, #8B5CF6, transparent 70%); top: 30%; right: -150px; animation-delay: -3s; }
+    .orb-3 { width: 400px; height: 400px; background: radial-gradient(circle, #06B6D4, transparent 70%); bottom: -100px; left: 30%; animation-delay: -5s; }
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -30px) scale(1.05); }
+      66% { transform: translate(-20px, 20px) scale(0.95); }
+    }
+    .grid-pattern {
+      background-image:
+        linear-gradient(rgba(223,107,51,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(223,107,51,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    .glass-card {
+      background: rgba(17,18,32,0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(30,32,53,0.8);
+    }
+    .glass-card:hover {
+      background: rgba(17,18,32,0.85);
+      border-color: rgba(223,107,51,0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 16px 32px rgba(0,0,0,0.4), 0 0 20px rgba(223,107,51,0.08);
+    }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #090A14; }
+    ::-webkit-scrollbar-thumb { background: #1E2035; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #DF6B33; }
+
+    .glow-btn {
+      background: linear-gradient(135deg, #DF6B33, #C45A26);
+      box-shadow: 0 4px 20px rgba(223,107,51,0.35);
+      transition: all 0.25s ease;
+    }
+    .glow-btn:hover {
+      box-shadow: 0 6px 30px rgba(223,107,51,0.5);
+      transform: translateY(-2px);
+    }
+
+    .nav-link {
+      color: #8B8C9E;
+      transition: all 0.2s ease;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: #DF6B33;
+      background: rgba(223,107,51,0.1);
+    }
+
+    .hero-title {
+      background: linear-gradient(135deg, #F0F0F0 0%, #DF6B33 50%, #FFD700 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .counter { font-variant-numeric: tabular-nums; }
+
+    .team-card {
+      background: rgba(17,18,32,0.8);
+      border: 1px solid rgba(30,32,53,0.8);
+      border-radius: 20px;
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      overflow: hidden;
+    }
+    .team-card:hover {
+      border-color: rgba(223,107,51,0.4);
+      transform: translateY(-8px);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.5), 0 0 30px rgba(223,107,51,0.1);
+    }
+    .team-card:hover .team-img {
+      transform: scale(1.05);
+    }
+    .team-img {
+      transition: transform 0.4s ease;
+    }
+
+    .timeline-line {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, transparent, #DF6B33 10%, #DF6B33 90%, transparent);
+    }
+    .timeline-dot {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #DF6B33;
+      box-shadow: 0 0 12px rgba(223,107,51,0.5);
+    }
+
+    .value-card {
+      background: rgba(17,18,32,0.6);
+      border: 1px solid rgba(30,32,53,0.8);
+      border-radius: 16px;
+      padding: 1.75rem;
+      transition: all 0.3s ease;
+    }
+    .value-card:hover {
+      border-color: rgba(223,107,51,0.4);
+      background: rgba(17,18,32,0.9);
+      transform: translateY(-4px);
+    }
+
+    .stat-num {
+      background: linear-gradient(135deg, #DF6B33, #FBBF24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen text-text-primary relative">
+
+  <!-- Animated background -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="fixed inset-0 grid-pattern pointer-events-none z-0"></div>
+
+  <!-- ===================== NAVBAR ===================== -->
+  <nav class="fixed top-0 left-0 right-0 z-50 glass-card border-b border-[#1E2035] px-6 py-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #DF6B33, #C45A26); box-shadow: 0 0 16px rgba(223,107,51,0.35);">
+          <i data-lucide="shopping-bag" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <h1 class="font-poppins font-bold text-base text-text-primary leading-tight">E-Commerce Portal</h1>
+          <p class="font-inter text-xs text-text-muted">Admin Dashboard</p>
+        </div>
+      </a>
+      <div class="hidden md:flex items-center gap-1">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="products.html" class="nav-link">Products</a>
+        <a href="about.html" class="nav-link active">About</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+        <a href="login.html" class="nav-link">Sign In</a>
+      </div>
+      <button class="md:hidden text-text-secondary" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')">
+        <i data-lucide="menu" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <div id="mobileMenu" class="hidden md:hidden mt-3 pt-3 border-t border-[#1E2035] flex flex-col gap-1">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="products.html" class="nav-link">Products</a>
+      <a href="about.html" class="nav-link active">About</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+      <a href="login.html" class="nav-link">Sign In</a>
+    </div>
+  </nav>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="relative z-10 pt-32 pb-20 px-6">
+    <div class="max-w-4xl mx-auto text-center">
+
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/10 mb-8">
+        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+        <span class="font-inter text-xs text-primary font-medium">About Our Platform</span>
+      </div>
+
+      <h1 class="hero-title font-poppins text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
+        Empowering E-Commerce<br/>With Intelligence
+      </h1>
+
+      <p class="font-inter text-lg text-text-secondary max-w-2xl mx-auto leading-relaxed mb-12">
+        We build powerful, data-driven admin portals that help businesses make smarter decisions. From sales analytics to product management — everything you need in one unified platform.
+      </p>
+
+      <!-- Stats Row -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="glass-card rounded-2xl p-5">
+          <p class="font-poppins text-3xl font-extrabold stat-num counter" data-target="24">0</p>
+          <p class="font-inter text-xs text-text-muted mt-1">Products Listed</p>
+        </div>
+        <div class="glass-card rounded-2xl p-5">
+          <p class="font-poppins text-3xl font-extrabold stat-num counter" data-target="5">0</p>
+          <p class="font-inter text-xs text-text-muted mt-1">Dashboard Tabs</p>
+        </div>
+        <div class="glass-card rounded-2xl p-5">
+          <p class="font-poppins text-3xl font-extrabold stat-num counter" data-target="7">0</p>
+          <p class="font-inter text-xs text-text-muted mt-1">Categories</p>
+        </div>
+        <div class="glass-card rounded-2xl p-5">
+          <p class="font-poppins text-3xl font-extrabold stat-num counter" data-target="4">0</p>
+          <p class="font-inter text-xs text-text-muted mt-1">Core Pages</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== STORY ===================== -->
+  <section class="relative z-10 px-6 pb-20">
+    <div class="max-w-6xl mx-auto">
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
+
+        <!-- Left: Text -->
+        <div>
+          <span class="font-inter text-xs text-primary font-semibold uppercase tracking-wider">Our Story</span>
+          <h2 class="font-poppins text-3xl font-bold text-text-primary mt-2 mb-5">Built for Modern E-Commerce Teams</h2>
+          <p class="font-inter text-text-secondary leading-relaxed mb-4">
+            The E-Commerce Admin Portal was created to solve a common challenge: managing sales data, product catalogs, and business performance across multiple channels shouldn't require a dozen different tools.
+          </p>
+          <p class="font-inter text-text-secondary leading-relaxed mb-4">
+            Our platform brings together real-time analytics, inventory management, and team performance tracking into a single, beautifully designed interface. Every chart, every table, every number is crafted to give you clarity — not complexity.
+          </p>
+          <p class="font-inter text-text-secondary leading-relaxed mb-6">
+            Built with modern web technologies, our portal works seamlessly on desktop, tablet, and mobile — so you can monitor your business from anywhere.
+          </p>
+          <a href="charts.html" class="glow-btn font-inter text-sm font-semibold text-white px-6 py-3 rounded-xl inline-flex items-center gap-2">
+            <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+            View Dashboard
+          </a>
+        </div>
+
+        <!-- Right: Image/Visual -->
+        <div class="relative">
+          <div class="glass-card rounded-3xl p-6 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop" alt="Dashboard analytics" class="w-full rounded-2xl object-cover" style="height: 320px;"
+                 onerror="this.style.display='none'"/>
+            <div class="mt-4 grid grid-cols-3 gap-3">
+              <div class="bg-[#0D0E1C] rounded-xl p-3 text-center">
+                <i data-lucide="trending-up" class="w-5 h-5 mx-auto mb-2" style="color:#DF6B33;"></i>
+                <p class="font-poppins text-sm font-bold text-text-primary">Real-time</p>
+                <p class="font-inter text-xs text-text-muted">Analytics</p>
+              </div>
+              <div class="bg-[#0D0E1C] rounded-xl p-3 text-center">
+                <i data-lucide="package" class="w-5 h-5 mx-auto mb-2" style="color:#8B5CF6;"></i>
+                <p class="font-poppins text-sm font-bold text-text-primary">Catalog</p>
+                <p class="font-inter text-xs text-text-muted">Management</p>
+              </div>
+              <div class="bg-[#0D0E1C] rounded-xl p-3 text-center">
+                <i data-lucide="trophy" class="w-5 h-5 mx-auto mb-2" style="color:#06B6D4;"></i>
+                <p class="font-poppins text-sm font-bold text-text-primary">Sales</p>
+                <p class="font-inter text-xs text-text-muted">Rankings</p>
+              </div>
+            </div>
+          </div>
+          <!-- Decorative -->
+          <div class="absolute -top-4 -right-4 w-24 h-24 rounded-full opacity-10" style="background: radial-gradient(circle, #DF6B33, transparent 70%); filter: blur(20px);"></div>
+          <div class="absolute -bottom-4 -left-4 w-16 h-16 rounded-full opacity-10" style="background: radial-gradient(circle, #8B5CF6, transparent 70%); filter: blur(20px);"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== VALUES ===================== -->
+  <section class="relative z-10 px-6 pb-20">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+        <span class="font-inter text-xs text-primary font-semibold uppercase tracking-wider">What We Stand For</span>
+        <h2 class="font-poppins text-3xl font-bold text-text-primary mt-2">Our Core Values</h2>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="value-card">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-4" style="background:rgba(223,107,51,0.15);">
+            <i data-lucide="zap" class="w-6 h-6" style="color:#DF6B33;"></i>
+          </div>
+          <h4 class="font-poppins font-bold text-base text-text-primary mb-2">Performance First</h4>
+          <p class="font-inter text-sm text-text-secondary leading-relaxed">Every millisecond matters. Our portal is optimized for speed, ensuring your data loads instantly and charts render smoothly.</p>
+        </div>
+        <div class="value-card">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-4" style="background:rgba(139,92,246,0.15);">
+            <i data-lucide="shield-check" class="w-6 h-6" style="color:#8B5CF6;"></i>
+          </div>
+          <h4 class="font-poppins font-bold text-base text-text-primary mb-2">Security & Trust</h4>
+          <p class="font-inter text-sm text-text-secondary leading-relaxed">Enterprise-grade authentication with social login options. Your data stays protected with industry-standard security practices.</p>
+        </div>
+        <div class="value-card">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-4" style="background:rgba(6,182,212,0.15);">
+            <i data-lucide="smartphone" class="w-6 h-6" style="color:#06B6D4;"></i>
+          </div>
+          <h4 class="font-poppins font-bold text-base text-text-primary mb-2">Responsive Design</h4>
+          <p class="font-inter text-sm text-text-secondary leading-relaxed">From a 27-inch desktop to a 6-inch phone — our interface adapts perfectly to every screen size without compromise.</p>
+        </div>
+        <div class="value-card">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-4" style="background:rgba(34,197,94,0.15);">
+            <i data-lucide="palette" class="w-6 h-6" style="color:#22C55E;"></i>
+          </div>
+          <h4 class="font-poppins font-bold text-base text-text-primary mb-2">Beautiful Experience</h4>
+          <p class="font-inter text-sm text-text-secondary leading-relaxed">Dark theme with elegant glassmorphism, smooth animations, and thoughtful micro-interactions that make work feel effortless.</p>
+        </div>
+        <div class="value-card">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-4" style="background:rgba(251,191,36,0.15);">
+            <i data-lucide="database" class="w-6 h-6" style="color:#FBBF24;"></i>
+          </div>
+          <h4 class="font-poppins font-bold text-base text-text-primary mb-2">Data-Driven</h4>
+          <p class="font-inter text-sm text-text-secondary leading-relaxed">Charts, KPIs, rankings, and tables — every visualization is designed to surface actionable insights, not just raw numbers.</p>
+        </div>
+        <div class="value-card">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-4" style="background:rgba(239,68,68,0.15);">
+            <i data-lucide="code-2" class="w-6 h-6" style="color:#EF4444;"></i>
+          </div>
+          <h4 class="font-poppins font-bold text-base text-text-primary mb-2">Modern Stack</h4>
+          <p class="font-inter text-sm text-text-secondary leading-relaxed">Built with Tailwind CSS, Chart.js, Lucide Icons, and pure JavaScript — no frameworks, no build steps, no unnecessary complexity.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TEAM ===================== -->
+  <section class="relative z-10 px-6 pb-20">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+        <span class="font-inter text-xs text-primary font-semibold uppercase tracking-wider">The People</span>
+        <h2 class="font-poppins text-3xl font-bold text-text-primary mt-2 mb-3">Meet Our Team</h2>
+        <p class="font-inter text-text-secondary max-w-lg mx-auto">A small but passionate group of developers, designers, and data enthusiasts building tools that matter.</p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Team 1 -->
+        <div class="team-card">
+          <div class="overflow-hidden" style="height: 200px;">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop&crop=face" alt="Team member" class="team-img w-full h-full object-cover"
+                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 300 200%22 fill=%22%231E2035%22%3E%3Crect width=%22300%22 height=%22200%22/%3E%3Ccircle cx=%22150%22 cy=%2280%22 r=%2235%22 fill=%22%2355566E%22/%3E%3Cellipse cx=%22150%22 cy=%22160%22 rx=%2250%22 ry=%2230%22 fill=%22%2355566E%22/%3E%3C/svg%3E'"/>
+          </div>
+          <div class="p-5">
+            <h4 class="font-poppins font-bold text-base text-text-primary">Alex Nguyen</h4>
+            <p class="font-inter text-xs text-primary mt-0.5 mb-3">Lead Developer</p>
+            <p class="font-inter text-xs text-text-muted leading-relaxed">Full-stack architect with 8+ years building scalable web platforms and data visualization tools.</p>
+            <div class="flex gap-3 mt-3">
+              <a href="#" class="text-text-muted hover:text-primary transition-colors"><i data-lucide="github" class="w-4 h-4"></i></a>
+              <a href="#" class="text-text-muted hover:text-primary transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+            </div>
+          </div>
+        </div>
+        <!-- Team 2 -->
+        <div class="team-card">
+          <div class="overflow-hidden" style="height: 200px;">
+            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=200&fit=crop&crop=face" alt="Team member" class="team-img w-full h-full object-cover"
+                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 300 200%22 fill=%22%231E2035%22%3E%3Crect width=%22300%22 height=%22200%22/%3E%3Ccircle cx=%22150%22 cy=%2280%22 r=%2235%22 fill=%22%2355566E%22/%3E%3Cellipse cx=%22150%22 cy=%22160%22 rx=%2250%22 ry=%2230%22 fill=%22%2355566E%22/%3E%3C/svg%3E'"/>
+          </div>
+          <div class="p-5">
+            <h4 class="font-poppins font-bold text-base text-text-primary">Sarah Chen</h4>
+            <p class="font-inter text-xs" style="color:#8B5CF6; margin-top:0.5; margin-bottom:3;">UI/UX Designer</p>
+            <p class="font-inter text-xs text-text-muted leading-relaxed">Design systems expert crafting intuitive interfaces with a passion for dark themes and glassmorphism.</p>
+            <div class="flex gap-3 mt-3">
+              <a href="#" class="text-text-muted hover:text-primary transition-colors"><i data-lucide="dribbble" class="w-4 h-4"></i></a>
+              <a href="#" class="text-text-muted hover:text-primary transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+            </div>
+          </div>
+        </div>
+        <!-- Team 3 -->
+        <div class="team-card">
+          <div class="overflow-hidden" style="height: 200px;">
+            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=200&fit=crop&crop=face" alt="Team member" class="team-img w-full h-full object-cover"
+                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 300 200%22 fill=%22%231E2035%22%3E%3Crect width=%22300%22 height=%22200%22/%3E%3Ccircle cx=%22150%22 cy=%2280%22 r=%2235%22 fill=%22%2355566E%22/%3E%3Cellipse cx=%22150%22 cy=%22160%22 rx=%2250%22 ry=%2230%22 fill=%22%2355566E%22/%3E%3C/svg%3E'"/>
+          </div>
+          <div class="p-5">
+            <h4 class="font-poppins font-bold text-base text-text-primary">Marcus Lee</h4>
+            <p class="font-inter text-xs" style="color:#06B6D4; margin-top:0.5; margin-bottom:3;">Data Analyst</p>
+            <p class="font-inter text-xs text-text-muted leading-relaxed">Transforms complex datasets into clear, actionable insights through beautiful charts and dashboards.</p>
+            <div class="flex gap-3 mt-3">
+              <a href="#" class="text-text-muted hover:text-primary transition-colors"><i data-lucide="github" class="w-4 h-4"></i></a>
+              <a href="#" class="text-text-muted hover:text-primary transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+            </div>
+          </div>
+        </div>
+        <!-- Team 4 -->
+        <div class="team-card">
+          <div class="overflow-hidden" style="height: 200px;">
+            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=200&fit=crop&crop=face" alt="Team member" class="team-img w-full h-full object-cover"
+                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 300 200%22 fill=%22%231E2035%22%3E%3Crect width=%22300%22 height=%22200%22/%3E%3Ccircle cx=%22150%22 cy=%2280%22 r=%2235%22 fill=%22%2355566E%22/%3E%3Cellipse cx=%22150%22 cy=%22160%22 rx=%2250%22 ry=%2230%22 fill=%22%2355566E%22/%3E%3C/svg%3E'"/>
+          </div>
+          <div class="p-5">
+            <h4 class="font-poppins font-bold text-base text-text-primary">Emily Park</h4>
+            <p class="font-inter text-xs" style="color:#22C55E; margin-top:0.5; margin-bottom:3;">Product Manager</p>
+            <p class="font-inter text-xs text-text-muted leading-relaxed">Bridge between user needs and technical solutions, ensuring every feature delivers real value.</p>
+            <div class="flex gap-3 mt-3">
+              <a href="#" class="text-text-muted hover:text-primary transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TIMELINE ===================== -->
+  <section class="relative z-10 px-6 pb-20">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-12">
+        <span class="font-inter text-xs text-primary font-semibold uppercase tracking-wider">Journey</span>
+        <h2 class="font-poppins text-3xl font-bold text-text-primary mt-2">Our Milestones</h2>
+      </div>
+
+      <div class="relative">
+        <div class="timeline-line hidden md:block"></div>
+
+        <!-- Milestone 1 -->
+        <div class="relative grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          <div class="md:text-right md:pr-12">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-2" style="background:rgba(223,107,51,0.1);">
+              <span class="w-2 h-2 rounded-full" style="background:#DF6B33;"></span>
+              <span class="font-inter text-xs text-primary font-semibold">Q1 2026</span>
+            </div>
+            <h4 class="font-poppins font-bold text-base text-text-primary mb-2">Project Kickoff</h4>
+            <p class="font-inter text-sm text-text-secondary leading-relaxed">Started with a simple idea: create an e-commerce portal that combines analytics, product management, and team tracking in one elegant interface.</p>
+          </div>
+          <div class="hidden md:flex items-start justify-center pl-12">
+            <div class="timeline-dot mt-1.5"></div>
+          </div>
+        </div>
+
+        <!-- Milestone 2 -->
+        <div class="relative grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          <div class="hidden md:flex items-start justify-end pr-12">
+            <div class="timeline-dot mt-1.5"></div>
+          </div>
+          <div class="md:pl-12">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-2" style="background:rgba(139,92,246,0.1);">
+              <span class="w-2 h-2 rounded-full" style="background:#8B5CF6;"></span>
+              <span class="font-inter text-xs font-semibold" style="color:#8B5CF6;">Q2 2026</span>
+            </div>
+            <h4 class="font-poppins font-bold text-base text-text-primary mb-2">Dashboard Launch</h4>
+            <p class="font-inter text-sm text-text-secondary leading-relaxed">Released the analytics dashboard with 5 tabs covering sales, business results, marketing, rankings, and geographic data — all powered by Chart.js.</p>
+          </div>
+        </div>
+
+        <!-- Milestone 3 -->
+        <div class="relative grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          <div class="md:text-right md:pr-12">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-2" style="background:rgba(6,182,212,0.1);">
+              <span class="w-2 h-2 rounded-full" style="background:#06B6D4;"></span>
+              <span class="font-inter text-xs font-semibold" style="color:#06B6D4;">Q3 2026</span>
+            </div>
+            <h4 class="font-poppins font-bold text-base text-text-primary mb-2">Product Catalog & About</h4>
+            <p class="font-inter text-sm text-text-secondary leading-relaxed">Expanded the portal with a full product catalog (24 products, 7 categories) and a complete About page with team profiles and company values.</p>
+          </div>
+          <div class="hidden md:flex items-start justify-center pl-12">
+            <div class="timeline-dot mt-1.5"></div>
+          </div>
+        </div>
+
+        <!-- Milestone 4 -->
+        <div class="relative grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="hidden md:flex items-start justify-end pr-12">
+            <div class="timeline-dot mt-1.5"></div>
+          </div>
+          <div class="md:pl-12">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-2" style="background:rgba(34,197,94,0.1);">
+              <span class="w-2 h-2 rounded-full" style="background:#22C55E;"></span>
+              <span class="font-inter text-xs font-semibold" style="color:#22C55E;">Q4 2026</span>
+            </div>
+            <h4 class="font-poppins font-bold text-base text-text-primary mb-2">What's Next</h4>
+            <p class="font-inter text-sm text-text-secondary leading-relaxed">Mobile app, real-time data sync, AI-powered recommendations, and multi-language support — the roadmap is just getting started.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CTA ===================== -->
+  <section class="relative z-10 px-6 pb-20">
+    <div class="max-w-4xl mx-auto">
+      <div class="glass-card rounded-3xl p-10 text-center" style="background:linear-gradient(135deg,rgba(223,107,51,0.12),rgba(139,92,246,0.08)); border-color:rgba(223,107,51,0.2);">
+        <h2 class="font-poppins text-2xl md:text-3xl font-bold text-text-primary mb-3">Ready to Explore?</h2>
+        <p class="font-inter text-text-secondary max-w-lg mx-auto mb-6">Jump into the portal and discover how our platform can transform the way you manage your e-commerce business.</p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <a href="products.html" class="glow-btn font-inter text-sm font-semibold text-white px-7 py-3 rounded-xl inline-flex items-center justify-center gap-2">
+            <i data-lucide="package" class="w-4 h-4"></i>
+            Browse Products
+          </a>
+          <a href="contact.html" class="font-inter text-sm font-medium text-text-secondary border border-[#1E2035] px-7 py-3 rounded-xl hover:border-primary hover:text-primary transition-all inline-flex items-center justify-center gap-2">
+            <i data-lucide="mail" class="w-4 h-4"></i>
+            Get in Touch
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="border-t border-[#1E2035] py-8 px-6 mt-8">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#DF6B33,#C45A26);">
+          <i data-lucide="shopping-bag" class="w-4 h-4 text-white"></i>
+        </div>
+        <span class="font-poppins text-sm font-semibold text-text-primary">E-Commerce Portal</span>
+      </div>
+      <p class="font-inter text-xs text-text-muted">&copy; 2026 E-Commerce Portal. Built with Tailwind CSS &amp; Lucide Icons.</p>
+      <div class="flex items-center gap-4">
+        <a href="index.html" class="font-inter text-xs text-text-muted hover:text-primary transition-colors">Home</a>
+        <a href="products.html" class="font-inter text-xs text-text-muted hover:text-primary transition-colors">Products</a>
+        <a href="about.html" class="font-inter text-xs text-text-muted hover:text-primary transition-colors">About</a>
+        <a href="contact.html" class="font-inter text-xs text-text-muted hover:text-primary transition-colors">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    // Animated counter
+    const counters = document.querySelectorAll('.counter');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const target = parseInt(el.dataset.target);
+          let current = 0;
+          const step = target / 40;
+          const timer = setInterval(() => {
+            current += step;
+            if (current >= target) {
+              el.textContent = target;
+              clearInterval(timer);
+            } else {
+              el.textContent = Math.floor(current);
+            }
+          }, 40);
+          observer.unobserve(el);
+        }
+      });
+    }, { threshold: 0.5 });
+    counters.forEach(c => observer.observe(c));
+  </script>
+</body>
+</html>
