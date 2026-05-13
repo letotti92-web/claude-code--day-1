@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Products — E-Commerce Portal</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: '#090A14',
+            primary: '#DF6B33',
+            'primary-hover': '#C45A26',
+            'primary-glow': 'rgba(223,107,51,0.25)',
+            card: '#111220',
+            'card-hover': '#16172a',
+            'input-bg': '#0D0E1C',
+            'input-border': '#1E2035',
+            'text-primary': '#F0F0F0',
+            'text-secondary': '#8B8C9E',
+            'text-muted': '#55566E',
+            divider: '#1E2035',
+          },
+          fontFamily: {
+            poppins: ['Poppins', 'sans-serif'],
+            inter: ['Inter', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #090A14;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    .glass-card {
+      background: rgba(17,18,32,0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(30,32,53,0.8);
+    }
+    .glass-card:hover {
+      background: rgba(17,18,32,0.85);
+      border-color: rgba(223,107,51,0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 16px 32px rgba(0,0,0,0.4), 0 0 20px rgba(223,107,51,0.08);
+    }
+
+    .product-card {
+      background: rgba(17,18,32,0.85);
+      border: 1px solid rgba(30,32,53,0.8);
+      border-radius: 16px;
+      transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+      overflow: hidden;
+    }
+    .product-card:hover {
+      border-color: rgba(223,107,51,0.4);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 30px rgba(223,107,51,0.1);
+    }
+    .product-card:hover .product-img-overlay {
+      opacity: 1;
+    }
+    .product-img-overlay {
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #090A14; }
+    ::-webkit-scrollbar-thumb { background: #1E2035; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #DF6B33; }
+
+    .glow-btn {
+      background: linear-gradient(135deg, #DF6B33, #C45A26);
+      box-shadow: 0 4px 20px rgba(223,107,51,0.35);
+      transition: all 0.25s ease;
+    }
+    .glow-btn:hover {
+      box-shadow: 0 6px 30px rgba(223,107,51,0.5);
+      transform: translateY(-2px);
+    }
+
+    .nav-link {
+      color: #8B8C9E;
+      transition: all 0.2s ease;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: #DF6B33;
+      background: rgba(223,107,51,0.1);
+    }
+
+    .filter-btn {
+      background: #0D0E1C;
+      border: 1px solid #1E2035;
+      color: #8B8C9E;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      border-color: #DF6B33;
+      color: #DF6B33;
+      background: rgba(223,107,51,0.08);
+    }
+
+    .badge-stock { font-size: 0.65rem; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+    .badge-in { background: rgba(34,197,94,0.15); color: #22C55E; }
+    .badge-low { background: rgba(251,191,36,0.15); color: #FBBF24; }
+    .badge-out { background: rgba(239,68,68,0.15); color: #EF4444; }
+
+    .rating-star { color: #FBBF24; font-size: 0.7rem; }
+
+    .page-btn {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      border: 1px solid #1E2035;
+      background: #0D0E1C;
+      color: #8B8C9E;
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .page-btn:hover:not(:disabled) { border-color: #DF6B33; color: #DF6B33; }
+    .page-btn.active { background: #DF6B33; border-color: #DF6B33; color: white; }
+    .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .progress-bar {
+      height: 6px;
+      border-radius: 3px;
+      background: #1E2035;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #DF6B33, #FBBF24);
+    }
+  </style>
+</head>
+
+<body class="min-h-screen text-text-primary">
+
+  <!-- ===================== NAVBAR ===================== -->
+  <nav class="fixed top-0 left-0 right-0 z-50 glass-card border-b border-[#1E2035] px-6 py-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #DF6B33, #C45A26); box-shadow: 0 0 16px rgba(223,107,51,0.35);">
+          <i data-lucide="shopping-bag" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <h1 class="font-poppins font-bold text-base text-text-primary leading-tight">E-Commerce Portal</h1>
+          <p class="font-inter text-xs text-text-muted">Admin Dashboard</p>
+        </div>
+      </div>
+      <div class="hidden md:flex items-center gap-1">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="products.html" class="nav-link active">Products</a>
+        <a href="charts.html" class="nav-link">Dashboard</a>
+        <a href="login.html" class="nav-link">Sign In</a>
+      </div>
+      <button class="md:hidden text-text-secondary" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')">
+        <i data-lucide="menu" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <div id="mobileMenu" class="hidden md:hidden mt-3 pt-3 border-t border-[#1E2035] flex flex-col gap-1">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="products.html" class="nav-link active">Products</a>
+      <a href="charts.html" class="nav-link">Dashboard</a>
+      <a href="login.html" class="nav-link">Sign In</a>
+    </div>
+  </nav>
+
+  <!-- ===================== MAIN CONTENT ===================== -->
+  <main class="pt-24 px-6 pb-12 max-w-7xl mx-auto">
+
+    <!-- Page Header -->
+    <div class="mb-8">
+      <div class="flex items-center gap-2 text-text-muted text-xs font-inter mb-2">
+        <a href="index.html" class="hover:text-primary transition-colors">Home</a>
+        <i data-lucide="chevron-right" class="w-3 h-3"></i>
+        <span class="text-text-secondary">Products</span>
+      </div>
+      <h1 class="font-poppins text-3xl font-bold text-text-primary">Product Catalog</h1>
+      <p class="font-inter text-text-secondary text-sm mt-1">Browse and manage your product inventory</p>
+    </div>
+
+    <!-- ===================== KPI CARDS ===================== -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="glass-card rounded-2xl p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(223,107,51,0.15);">
+            <i data-lucide="package" class="w-5 h-5" style="color:#DF6B33;"></i>
+          </div>
+        </div>
+        <p id="kpi-total" class="font-poppins text-2xl font-bold text-text-primary">0</p>
+        <p class="font-inter text-xs text-text-muted mt-1">Total Products</p>
+      </div>
+      <div class="glass-card rounded-2xl p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(139,92,246,0.15);">
+            <i data-lucide="layers" class="w-5 h-5" style="color:#8B5CF6;"></i>
+          </div>
+        </div>
+        <p id="kpi-categories" class="font-poppins text-2xl font-bold text-text-primary">0</p>
+        <p class="font-inter text-xs text-text-muted mt-1">Categories</p>
+      </div>
+      <div class="glass-card rounded-2xl p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(6,182,212,0.15);">
+            <i data-lucide="tag" class="w-5 h-5" style="color:#06B6D4;"></i>
+          </div>
+        </div>
+        <p id="kpi-avg-price" class="font-poppins text-2xl font-bold text-text-primary">$0</p>
+        <p class="font-inter text-xs text-text-muted mt-1">Avg Price</p>
+      </div>
+      <div class="glass-card rounded-2xl p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(239,68,68,0.15);">
+            <i data-lucide="alert-triangle" class="w-5 h-5" style="color:#EF4444;"></i>
+          </div>
+        </div>
+        <p id="kpi-low-stock" class="font-poppins text-2xl font-bold text-text-primary">0</p>
+        <p class="font-inter text-xs text-text-muted mt-1">Low Stock Items</p>
+      </div>
+    </div>
+
+    <!-- ===================== CHART + CONTROLS ROW ===================== -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+
+      <!-- Category Distribution Chart -->
+      <div class="glass-card rounded-2xl p-5">
+        <h3 class="font-poppins font-bold text-sm text-text-primary mb-4 flex items-center gap-2">
+          <i data-lucide="pie-chart" class="w-4 h-4" style="color:#DF6B33;"></i>
+          Category Distribution
+        </h3>
+        <div class="relative" style="height: 200px;">
+          <canvas id="categoryChart"></canvas>
+        </div>
+        <div id="category-legend" class="mt-4 space-y-2"></div>
+      </div>
+
+      <!-- Search & Controls -->
+      <div class="lg:col-span-3 glass-card rounded-2xl p-5">
+        <div class="flex flex-col sm:flex-row gap-3 mb-5">
+          <!-- Search -->
+          <div class="relative flex-1">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"></i>
+            <input id="search-input" type="text" placeholder="Search products..." class="w-full bg-input-bg border border-input-border rounded-xl py-3 pl-10 pr-4 font-inter text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-primary transition-colors" />
+          </div>
+          <!-- Sort -->
+          <select id="sort-select" class="bg-input-bg border border-input-border rounded-xl py-3 px-4 font-inter text-sm text-text-secondary focus:outline-none focus:border-primary transition-colors cursor-pointer">
+            <option value="default">Sort by Default</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="name-asc">Name: A to Z</option>
+            <option value="name-desc">Name: Z to A</option>
+            <option value="stock-asc">Stock: Low to High</option>
+            <option value="rating-desc">Rating: High to Low</option>
+          </select>
+          <!-- View toggle -->
+          <div class="flex items-center gap-1 bg-input-bg border border-input-border rounded-xl p-1">
+            <button id="view-grid" class="p-2 rounded-lg text-primary bg-primary/15" title="Grid view">
+              <i data-lucide="grid-3x3" class="w-4 h-4"></i>
+            </button>
+            <button id="view-list" class="p-2 rounded-lg text-text-muted hover:text-text-secondary transition-colors" title="List view">
+              <i data-lucide="list" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Category Filters -->
+        <div class="flex flex-wrap gap-2 mb-5">
+          <button class="filter-btn active" data-category="all">All</button>
+          <button class="filter-btn" data-category="Electronics">Electronics</button>
+          <button class="filter-btn" data-category="Clothing">Clothing</button>
+          <button class="filter-btn" data-category="Home & Garden">Home & Garden</button>
+          <button class="filter-btn" data-category="Sports">Sports</button>
+          <button class="filter-btn" data-category="Books">Books</button>
+          <button class="filter-btn" data-category="Beauty">Beauty</button>
+        </div>
+
+        <!-- Stock Filters -->
+        <div class="flex flex-wrap gap-2">
+          <span class="font-inter text-xs text-text-muted self-center mr-1">Stock:</span>
+          <button class="filter-btn text-xs" data-stock="all">All</button>
+          <button class="filter-btn text-xs" data-stock="in">In Stock</button>
+          <button class="filter-btn text-xs" data-stock="low">Low Stock</button>
+          <button class="filter-btn text-xs" data-stock="out">Out of Stock</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== PRODUCT GRID ===================== -->
+    <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-8">
+      <!-- Products injected by JS -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="hidden text-center py-16">
+      <div class="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center" style="background:rgba(223,107,51,0.1);">
+        <i data-lucide="package-x" class="w-10 h-10" style="color:#DF6B33;"></i>
+      </div>
+      <h3 class="font-poppins text-xl font-bold text-text-primary mb-2">No products found</h3>
+      <p class="font-inter text-sm text-text-secondary">Try adjusting your search or filter criteria</p>
+      <button onclick="resetFilters()" class="mt-4 glow-btn font-inter text-sm font-medium text-white px-6 py-2.5 rounded-xl">
+        Reset Filters
+      </button>
+    </div>
+
+    <!-- ===================== PAGINATION ===================== -->
+    <div id="pagination" class="flex items-center justify-center gap-2">
+      <!-- Pages injected by JS -->
+    </div>
+
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="border-t border-[#1E2035] py-8 px-6 mt-8">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#DF6B33,#C45A26);">
+          <i data-lucide="shopping-bag" class="w-4 h-4 text-white"></i>
+        </div>
+        <span class="font-poppins text-sm font-semibold text-text-primary">E-Commerce Portal</span>
+      </div>
+      <p class="font-inter text-xs text-text-muted">Product Catalog &middot; Powered by Tailwind CSS &amp; Lucide Icons</p>
+      <div class="flex items-center gap-4">
+        <a href="index.html" class="font-inter text-xs text-text-muted hover:text-primary transition-colors">Home</a>
+        <a href="products.html" class="font-inter text-xs text-text-muted hover:text-primary transition-colors">Products</a>
+        <a href="charts.html" class="font-inter text-xs text-text-muted hover:text-primary transition-colors">Dashboard</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    // ==================== MOCK DATA ====================
+    const PRODUCTS = [
+      { id: 1, name: "MacBook Pro 16\" M3", category: "Electronics", price: 2499, originalPrice: 2799, stock: 12, rating: 4.9, reviews: 1247, image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=300&fit=crop", badge: "Best Seller", sold: 89 },
+      { id: 2, name: "iPhone 15 Pro Max", category: "Electronics", price: 1199, originalPrice: 1299, stock: 24, rating: 4.8, reviews: 3421, image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=300&fit=crop", badge: "New", sold: 156 },
+      { id: 3, name: "Sony WH-1000XM5", category: "Electronics", price: 349, originalPrice: 399, stock: 8, rating: 4.7, reviews: 892, image: "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=400&h=300&fit=crop", badge: "", sold: 67 },
+      { id: 4, name: "Samsung Galaxy S24 Ultra", category: "Electronics", price: 1299, originalPrice: 1399, stock: 31, rating: 4.8, reviews: 2156, image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400&h=300&fit=crop", badge: "", sold: 134 },
+      { id: 5, name: "Nike Air Max 270", category: "Clothing", price: 150, originalPrice: 170, stock: 45, rating: 4.6, reviews: 567, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop", badge: "Popular", sold: 234 },
+      { id: 6, name: "Levi's 501 Original Jeans", category: "Clothing", price: 79, originalPrice: 99, stock: 67, rating: 4.5, reviews: 412, image: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=300&fit=crop", badge: "", sold: 189 },
+      { id: 7, name: "Adidas Ultraboost 22", category: "Clothing", price: 190, originalPrice: 220, stock: 3, rating: 4.7, reviews: 321, image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400&h=300&fit=crop", badge: "Low Stock", sold: 78 },
+      { id: 8, name: "Herman Miller Aeron Chair", category: "Home & Garden", price: 1395, originalPrice: 1595, stock: 5, rating: 4.9, reviews: 678, image: "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=400&h=300&fit=crop", badge: "Premium", sold: 34 },
+      { id: 9, name: "Dyson V15 Detect", category: "Home & Garden", price: 749, originalPrice: 849, stock: 18, rating: 4.8, reviews: 934, image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop", badge: "", sold: 56 },
+      { id: 10, name: "IKEA KALLAX Shelf Unit", category: "Home & Garden", price: 89, originalPrice: 109, stock: 52, rating: 4.4, reviews: 234, image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=300&fit=crop", badge: "", sold: 145 },
+      { id: 11, name: "Garmin Fenix 7X Solar", category: "Sports", price: 899, originalPrice: 999, stock: 14, rating: 4.8, reviews: 445, image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop", badge: "New", sold: 23 },
+      { id: 12, name: "Peloton Bike+", category: "Sports", price: 2495, originalPrice: 2795, stock: 0, rating: 4.6, reviews: 1123, image: "https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=300&fit=crop", badge: "Out of Stock", sold: 0 },
+      { id: 13, name: "Atomic Warden 11 Bindings", category: "Sports", price: 249, originalPrice: 279, stock: 22, rating: 4.7, reviews: 89, image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop", badge: "", sold: 41 },
+      { id: 14, name: "The Psychology of Money", category: "Books", price: 18, originalPrice: 22, stock: 120, rating: 4.9, reviews: 8745, image: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop", badge: "Best Seller", sold: 567 },
+      { id: 15, name: "Atomic Habits", category: "Books", price: 16, originalPrice: 21, stock: 95, rating: 4.8, reviews: 12340, image: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=400&h=300&fit=crop", badge: "Popular", sold: 789 },
+      { id: 16, name: "Deep Work", category: "Books", price: 17, originalPrice: 20, stock: 2, rating: 4.7, reviews: 4521, image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=300&fit=crop", badge: "Low Stock", sold: 234 },
+      { id: 17, name: "La Mer Moisturizing Cream", category: "Beauty", price: 345, originalPrice: 380, stock: 28, rating: 4.6, reviews: 567, image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&h=300&fit=crop", badge: "", sold: 89 },
+      { id: 18, name: "Dyson Airwrap Complete", category: "Beauty", price: 599, originalPrice: 679, stock: 7, rating: 4.7, reviews: 1234, image: "https://images.unsplash.com/photo-1522338242042-2d1c50c6b18e?w=400&h=300&fit=crop", badge: "Trending", sold: 156 },
+      { id: 19, name: "SK-II Facial Treatment Essence", category: "Beauty", price: 229, originalPrice: 259, stock: 35, rating: 4.8, reviews: 2341, image: "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400&h=300&fit=crop", badge: "", sold: 201 },
+      { id: 20, name: "iPad Pro 12.9\" M2", category: "Electronics", price: 1099, originalPrice: 1199, stock: 19, rating: 4.9, reviews: 1876, image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=300&fit=crop", badge: "New", sold: 92 },
+      { id: 21, name: "North Face 1996 Retro Nuptse", category: "Clothing", price: 399, originalPrice: 449, stock: 11, rating: 4.8, reviews: 723, image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&h=300&fit=crop", badge: "Popular", sold: 178 },
+      { id: 22, name: "Apple Watch Ultra 2", category: "Electronics", price: 799, originalPrice: 849, stock: 16, rating: 4.9, reviews: 2134, image: "https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=400&h=300&fit=crop", badge: "", sold: 145 },
+      { id: 23, name: "Charlotte Tilbury Pillow Talk Set", category: "Beauty", price: 95, originalPrice: 120, stock: 43, rating: 4.9, reviews: 1567, image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=300&fit=crop", badge: "Best Seller", sold: 312 },
+      { id: 24, name: "Patagonia Better Sweater Fleece", category: "Clothing", price: 139, originalPrice: 159, stock: 0, rating: 4.6, reviews: 234, image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&h=300&fit=crop", badge: "Out of Stock", sold: 0 },
+    ];
+
+    // ==================== STATE ====================
+    let currentCategory = 'all';
+    let currentStock = 'all';
+    let currentSort = 'default';
+    let searchQuery = '';
+    let currentPage = 1;
+    const perPage = 12;
+    let viewMode = 'grid';
+
+    // ==================== HELPERS ====================
+    function fmtPrice(p) {
+      return '$' + p.toLocaleString('en-US');
+    }
+
+    function fmtNum(n) {
+      if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
+      return n.toString();
+    }
+
+    function stockStatus(stock) {
+      if (stock === 0) return { label: 'Out of Stock', cls: 'badge-out' };
+      if (stock <= 5) return { label: 'Low Stock', cls: 'badge-low' };
+      return { label: 'In Stock', cls: 'badge-in' };
+    }
+
+    function discount(p, op) {
+      return Math.round((1 - p / op) * 100);
+    }
+
+    function renderStars(r) {
+      const full = Math.floor(r);
+      const half = r % 1 >= 0.5 ? 1 : 0;
+      const empty = 5 - full - half;
+      return '<span class="rating-star">' + '<i data-lucide="star" class="w-3 h-3 fill-current inline"></i>'.repeat(full) +
+        (half ? '<i data-lucide="star-half" class="w-3 h-3 fill-current inline"></i>' : '') +
+        '<i data-lucide="star" class="w-3 h-3 inline opacity-30"></i>'.repeat(empty) + '</span>';
+    }
+
+    // ==================== FILTERING ====================
+    function getFiltered() {
+      let list = [...PRODUCTS];
+      if (currentCategory !== 'all') list = list.filter(p => p.category === currentCategory);
+      if (currentStock === 'in') list = list.filter(p => p.stock > 5);
+      if (currentStock === 'low') list = list.filter(p => p.stock > 0 && p.stock <= 5);
+      if (currentStock === 'out') list = list.filter(p => p.stock === 0);
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        list = list.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
+      }
+      switch (currentSort) {
+        case 'price-asc': list.sort((a, b) => a.price - b.price); break;
+        case 'price-desc': list.sort((a, b) => b.price - a.price); break;
+        case 'name-asc': list.sort((a, b) => a.name.localeCompare(b.name)); break;
+        case 'name-desc': list.sort((a, b) => b.name.localeCompare(a.name)); break;
+        case 'stock-asc': list.sort((a, b) => a.stock - b.stock); break;
+        case 'rating-desc': list.sort((a, b) => b.rating - a.rating); break;
+      }
+      return list;
+    }
+
+    // ==================== RENDER ====================
+    function renderProducts(list) {
+      const grid = document.getElementById('product-grid');
+      const empty = document.getElementById('empty-state');
+      const start = (currentPage - 1) * perPage;
+      const page = list.slice(start, start + perPage);
+
+      if (page.length === 0) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+
+      grid.className = viewMode === 'grid'
+        ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-8'
+        : 'flex flex-col gap-3 mb-8';
+
+      grid.innerHTML = page.map(p => {
+        const st = stockStatus(p.stock);
+        const disc = discount(p.price, p.originalPrice);
+
+        if (viewMode === 'list') {
+          return `
+          <div class="product-card flex items-center gap-4 p-4" data-id="${p.id}">
+            <div class="relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
+              <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover" loading="lazy"
+                   onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22 fill=%22%231E2035%22%3E%3Crect width=%22400%22 height=%22300%22/%3E%3Ctext x=%22200%22 y=%22150%22 text-anchor=%22middle%22 fill=%22%2355566E%22 font-family=%22sans-serif%22 font-size=%2240%22 dy=%22.3em%22%3E📦%3C/text%3E%3C/svg%3E'"/>
+              ${p.badge ? `<span class="absolute top-1 left-1 text-white text-xs font-inter font-semibold px-1.5 py-0.5 rounded-md" style="background:${p.badge==='New'?'#8B5CF6':p.badge==='Best Seller'?'#DF6B33':p.badge==='Popular'?'#06B6D4':'#22C55E'};font-size:9px;">${p.badge}</span>` : ''}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="font-inter text-xs px-2 py-0.5 rounded-full" style="background:rgba(139,92,246,0.12);color:#8B5CF6;">${p.category}</span>
+                <span class="badge-stock ${st.cls}">${st.label}</span>
+              </div>
+              <h4 class="font-poppins font-semibold text-sm text-text-primary truncate">${p.name}</h4>
+              <div class="flex items-center gap-2 mt-1">${renderStars(p.rating)} <span class="font-inter text-xs text-text-muted">${p.rating} (${fmtNum(p.reviews)})</span></div>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <div class="flex items-center gap-2 justify-end">
+                <span class="font-poppins font-bold text-base text-primary">${fmtPrice(p.price)}</span>
+                ${disc > 0 ? `<span class="font-inter text-xs text-text-muted line-through">${fmtPrice(p.originalPrice)}</span>` : ''}
+              </div>
+              <div class="progress-bar mt-2 w-28">
+                <div class="progress-fill" style="width:${Math.min(100, (p.stock / 50) * 100)}%"></div>
+              </div>
+              <p class="font-inter text-xs text-text-muted mt-1 text-right">${p.stock} units left</p>
+            </div>
+          </div>`;
+        }
+
+        return `
+        <div class="product-card" data-id="${p.id}">
+          <div class="relative overflow-hidden" style="height: 180px;">
+            <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover transition-transform duration-300 hover:scale-110" loading="lazy"
+                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22 fill=%22%231E2035%22%3E%3Crect width=%22400%22 height=%22300%22/%3E%3Ctext x=%22200%22 y=%22150%22 text-anchor=%22middle%22 fill=%22%2355566E%22 font-family=%22sans-serif%22 font-size=%2240%22 dy=%22.3em%22%3E📦%3C/text%3E%3C/svg%3E'"/>
+            ${p.badge ? `<span class="absolute top-3 left-3 text-white text-xs font-inter font-semibold px-2.5 py-1 rounded-lg" style="background:${p.badge==='New'?'#8B5CF6':p.badge==='Best Seller'?'#DF6B33':p.badge==='Popular'?'#06B6D4':'#22C55E'};">${p.badge}</span>` : ''}
+            ${disc > 0 ? `<span class="absolute top-3 right-3 text-white text-xs font-inter font-bold px-2 py-1 rounded-lg" style="background:rgba(239,68,68,0.85);">-${disc}%</span>` : ''}
+            <div class="product-img-overlay absolute inset-0 flex items-center justify-center gap-3" style="background:rgba(0,0,0,0.4);">
+              <button class="w-10 h-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center hover:bg-white/30 transition-colors" title="Add to wishlist">
+                <i data-lucide="heart" class="w-4 h-4 text-white"></i>
+              </button>
+              <button class="w-10 h-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center hover:bg-white/30 transition-colors" title="Quick view">
+                <i data-lucide="eye" class="w-4 h-4 text-white"></i>
+              </button>
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="font-inter text-xs px-2 py-0.5 rounded-full" style="background:rgba(139,92,246,0.12);color:#8B5CF6;">${p.category}</span>
+              <span class="badge-stock ${st.cls}">${st.label}</span>
+            </div>
+            <h4 class="font-poppins font-semibold text-sm text-text-primary mb-2 leading-snug line-clamp-2">${p.name}</h4>
+            <div class="flex items-center gap-1 mb-3">
+              ${renderStars(p.rating)}
+              <span class="font-inter text-xs text-text-muted ml-1">${p.rating} (${fmtNum(p.reviews)})</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-baseline gap-2">
+                <span class="font-poppins font-bold text-lg text-primary">${fmtPrice(p.price)}</span>
+                ${disc > 0 ? `<span class="font-inter text-xs text-text-muted line-through">${fmtPrice(p.originalPrice)}</span>` : ''}
+              </div>
+              <span class="font-inter text-xs text-text-muted">${p.sold > 0 ? p.sold + ' sold' : ''}</span>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function renderPagination(list) {
+      const total = Math.ceil(list.length / perPage);
+      const pag = document.getElementById('pagination');
+      if (total <= 1) { pag.innerHTML = ''; return; }
+
+      let html = '';
+      html += `<button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+        <i data-lucide="chevron-left" class="w-4 h-4"></i></button>`;
+
+      const maxVisible = 5;
+      let start = Math.max(1, currentPage - 2);
+      let end = Math.min(total, start + maxVisible - 1);
+      if (end - start < maxVisible - 1) start = Math.max(1, end - maxVisible + 1);
+
+      if (start > 1) {
+        html += `<button class="page-btn" onclick="goPage(1)">1</button>`;
+        if (start > 2) html += `<span class="font-inter text-xs text-text-muted px-1">...</span>`;
+      }
+      for (let i = start; i <= end; i++) {
+        html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+      }
+      if (end < total) {
+        if (end < total - 1) html += `<span class="font-inter text-xs text-text-muted px-1">...</span>`;
+        html += `<button class="page-btn" onclick="goPage(${total})">${total}</button>`;
+      }
+
+      html += `<button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage === total ? 'disabled' : ''}>
+        <i data-lucide="chevron-right" class="w-4 h-4"></i></button>`;
+
+      html += `<span class="font-inter text-xs text-text-muted ml-3">${list.length} products</span>`;
+      pag.innerHTML = html;
+      lucide.createIcons();
+    }
+
+    function updateKPIs(list) {
+      const cats = new Set(PRODUCTS.map(p => p.category));
+      const avg = Math.round(PRODUCTS.reduce((s, p) => s + p.price, 0) / PRODUCTS.length);
+      const low = PRODUCTS.filter(p => p.stock > 0 && p.stock <= 5).length;
+      document.getElementById('kpi-total').textContent = PRODUCTS.length;
+      document.getElementById('kpi-categories').textContent = cats.size;
+      document.getElementById('kpi-avg-price').textContent = fmtPrice(avg);
+      document.getElementById('kpi-low-stock').textContent = low;
+    }
+
+    function goPage(n) {
+      const total = Math.ceil(getFiltered().length / perPage);
+      currentPage = Math.max(1, Math.min(n, total));
+      render();
+    }
+
+    function render() {
+      const list = getFiltered();
+      renderProducts(list);
+      renderPagination(list);
+    }
+
+    function resetFilters() {
+      currentCategory = 'all';
+      currentStock = 'all';
+      currentSort = 'default';
+      searchQuery = '';
+      currentPage = 1;
+      document.getElementById('search-input').value = '';
+      document.getElementById('sort-select').value = 'default';
+      document.querySelectorAll('[data-category]').forEach(b => {
+        b.classList.toggle('active', b.dataset.category === 'all');
+      });
+      document.querySelectorAll('[data-stock]').forEach(b => {
+        b.classList.toggle('active', b.dataset.stock === 'all');
+      });
+      render();
+    }
+
+    // ==================== CHART ====================
+    function initChart() {
+      const cats = {};
+      PRODUCTS.forEach(p => { cats[p.category] = (cats[p.category] || 0) + 1; });
+      const labels = Object.keys(cats);
+      const data = Object.values(cats);
+      const colors = ['#DF6B33', '#8B5CF6', '#06B6D4', '#22C55E', '#FBBF24', '#EF4444', '#EC4899'];
+      const legendEl = document.getElementById('category-legend');
+
+      new Chart(document.getElementById('categoryChart'), {
+        type: 'doughnut',
+        data: {
+          labels,
+          datasets: [{
+            data,
+            backgroundColor: colors.slice(0, labels.length),
+            borderWidth: 0,
+            hoverOffset: 8,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '65%',
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(17,18,32,0.95)',
+              borderColor: '#1E2035',
+              borderWidth: 1,
+              titleColor: '#F0F0F0',
+              bodyColor: '#8B8C9E',
+              padding: 10,
+              callbacks: {
+                label: ctx => ` ${ctx.parsed} products`,
+              },
+            },
+          },
+        },
+      });
+
+      // Custom legend
+      legendEl.innerHTML = labels.map((l, i) => `
+        <div class="flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:${colors[i]};"></span>
+            <span class="font-inter text-text-secondary">${l}</span>
+          </div>
+          <span class="font-inter font-semibold text-text-primary">${data[i]}</span>
+        </div>
+      `).join('');
+    }
+
+    // ==================== EVENT LISTENERS ====================
+    document.getElementById('search-input').addEventListener('input', e => {
+      searchQuery = e.target.value.trim();
+      currentPage = 1;
+      render();
+    });
+
+    document.getElementById('sort-select').addEventListener('change', e => {
+      currentSort = e.target.value;
+      currentPage = 1;
+      render();
+    });
+
+    document.querySelectorAll('[data-category]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentCategory = btn.dataset.category;
+        currentPage = 1;
+        document.querySelectorAll('[data-category]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-stock]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentStock = btn.dataset.stock;
+        currentPage = 1;
+        document.querySelectorAll('[data-stock]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        render();
+      });
+    });
+
+    document.getElementById('view-grid').addEventListener('click', () => {
+      viewMode = 'grid';
+      document.getElementById('view-grid').classList.add('bg-primary/15', 'text-primary');
+      document.getElementById('view-grid').classList.remove('text-text-muted');
+      document.getElementById('view-list').classList.remove('bg-primary/15', 'text-primary');
+      document.getElementById('view-list').classList.add('text-text-muted');
+      render();
+    });
+
+    document.getElementById('view-list').addEventListener('click', () => {
+      viewMode = 'list';
+      document.getElementById('view-list').classList.add('bg-primary/15', 'text-primary');
+      document.getElementById('view-list').classList.remove('text-text-muted');
+      document.getElementById('view-grid').classList.remove('bg-primary/15', 'text-primary');
+      document.getElementById('view-grid').classList.add('text-text-muted');
+      render();
+    });
+
+    // ==================== INIT ====================
+    updateKPIs();
+    initChart();
+    render();
+  </script>
+</body>
+</html>
