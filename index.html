@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E-Commerce Admin Portal</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: '#090A14',
+            primary: '#DF6B33',
+            'primary-hover': '#C45A26',
+            'primary-glow': 'rgba(223,107,51,0.25)',
+            card: '#111220',
+            'card-hover': '#16172a',
+            'input-bg': '#0D0E1C',
+            'input-border': '#1E2035',
+            'text-primary': '#F0F0F0',
+            'text-secondary': '#8B8C9E',
+            'text-muted': '#55566E',
+            divider: '#1E2035',
+          },
+          fontFamily: {
+            poppins: ['Poppins', 'sans-serif'],
+            inter: ['Inter', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #090A14;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.12;
+      animation: orbFloat 8s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, #DF6B33, transparent 70%);
+      top: -200px; left: -200px;
+      animation-delay: 0s;
+    }
+    .orb-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #8B5CF6, transparent 70%);
+      top: 30%; right: -150px;
+      animation-delay: -3s;
+    }
+    .orb-3 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #06B6D4, transparent 70%);
+      bottom: -100px; left: 30%;
+      animation-delay: -5s;
+    }
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -30px) scale(1.05); }
+      66% { transform: translate(-20px, 20px) scale(0.95); }
+    }
+
+    .grid-pattern {
+      background-image:
+        linear-gradient(rgba(223,107,51,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(223,107,51,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    .glass-card {
+      background: rgba(17,18,32,0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(30,32,53,0.8);
+    }
+
+    .glass-card:hover {
+      background: rgba(17,18,32,0.85);
+      border-color: rgba(223,107,51,0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(223,107,51,0.08);
+    }
+
+    .page-card {
+      background: rgba(17,18,32,0.9);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(30,32,53,0.8);
+      transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+    .page-card:hover {
+      border-color: rgba(223,107,51,0.4);
+      transform: translateY(-6px);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.5), 0 0 40px rgba(223,107,51,0.12);
+    }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #090A14; }
+    ::-webkit-scrollbar-thumb { background: #1E2035; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #DF6B33; }
+
+    .glow-btn {
+      background: linear-gradient(135deg, #DF6B33, #C45A26);
+      box-shadow: 0 4px 20px rgba(223,107,51,0.35);
+      transition: all 0.25s ease;
+    }
+    .glow-btn:hover {
+      box-shadow: 0 6px 30px rgba(223,107,51,0.5);
+      transform: translateY(-2px);
+    }
+
+    .nav-link {
+      color: #8B8C9E;
+      transition: all 0.2s ease;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    .nav-link:hover {
+      color: #DF6B33;
+      background: rgba(223,107,51,0.1);
+    }
+
+    .stat-bar {
+      background: linear-gradient(90deg, #DF6B33, #C45A26);
+      border-radius: 2px;
+      height: 4px;
+    }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 0.6s ease forwards;
+    }
+    .fade-up:nth-child(1) { animation-delay: 0.1s; }
+    .fade-up:nth-child(2) { animation-delay: 0.2s; }
+    .fade-up:nth-child(3) { animation-delay: 0.3s; }
+    .fade-up:nth-child(4) { animation-delay: 0.4s; }
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-title {
+      background: linear-gradient(135deg, #F0F0F0 0%, #DF6B33 50%, #FFD700 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen text-text-primary relative">
+
+  <!-- Animated background -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="fixed inset-0 grid-pattern pointer-events-none z-0"></div>
+
+  <!-- ===================== NAVBAR ===================== -->
+  <nav class="fixed top-0 left-0 right-0 z-50 glass-card border-b border-[#1E2035] px-6 py-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #DF6B33, #C45A26); box-shadow: 0 0 16px rgba(223,107,51,0.35);">
+          <i data-lucide="shopping-bag" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <h1 class="font-poppins font-bold text-base text-text-primary leading-tight">E-Commerce Portal</h1>
+          <p class="font-inter text-xs text-text-muted">Admin Dashboard System</p>
+        </div>
+      </div>
+      <div class="hidden md:flex items-center gap-1">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="products.html" class="nav-link">Products</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+        <a href="login.html" class="glow-btn font-inter text-sm font-medium text-white px-4 py-2 rounded-xl ml-2">
+          Get Started
+        </a>
+      </div>
+      <button class="md:hidden text-text-secondary" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')">
+        <i data-lucide="menu" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <div id="mobileMenu" class="hidden md:hidden mt-3 pt-3 border-t border-[#1E2035] flex flex-col gap-1">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="products.html" class="nav-link">Products</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+      <a href="login.html" class="nav-link">Sign In</a>
+    </div>
+  </nav>
+    </div>
+  </nav>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="relative z-10 min-h-screen flex items-center justify-center px-6 pt-24 pb-16">
+    <div class="max-w-5xl mx-auto text-center">
+
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/10 mb-8 fade-up">
+        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+        <span class="font-inter text-xs text-primary font-medium">E-Commerce Analytics & Admin System</span>
+      </div>
+
+      <h1 class="hero-title font-poppins text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 fade-up">
+        Analytics That Drive<br/>Business Growth
+      </h1>
+
+      <p class="font-inter text-lg md:text-xl text-text-secondary max-w-2xl mx-auto mb-10 leading-relaxed fade-up">
+        A comprehensive e-commerce portal featuring real-time sales analytics, business performance metrics, marketing insights, sales team rankings, geographic revenue analysis, and a full product catalog — all in one powerful platform.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 fade-up">
+        <a href="login.html" class="glow-btn font-inter text-base font-semibold text-white px-8 py-4 rounded-xl flex items-center gap-2">
+          <i data-lucide="log-in" class="w-5 h-5"></i>
+          Sign In to Portal
+        </a>
+        <a href="register.html" class="font-inter text-base font-medium text-text-secondary border border-[#1E2035] px-8 py-4 rounded-xl hover:border-primary hover:text-primary transition-all flex items-center gap-2">
+          <i data-lucide="user-plus" class="w-5 h-5"></i>
+          Create Account
+        </a>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16 fade-up">
+        <div class="text-center">
+          <p class="font-poppins text-3xl font-bold text-text-primary">4</p>
+          <p class="font-inter text-xs text-text-muted mt-1">Portal Pages</p>
+          <div class="stat-bar w-12 mx-auto mt-2"></div>
+        </div>
+        <div class="text-center">
+          <p class="font-poppins text-3xl font-bold text-text-primary">5</p>
+          <p class="font-inter text-xs text-text-muted mt-1">Dashboard Tabs</p>
+          <div class="stat-bar w-12 mx-auto mt-2"></div>
+        </div>
+        <div class="text-center">
+          <p class="font-poppins text-3xl font-bold text-text-primary">24</p>
+          <p class="font-inter text-xs text-text-muted mt-1">Mock Products</p>
+          <div class="stat-bar w-12 mx-auto mt-2"></div>
+        </div>
+        <div class="text-center">
+          <p class="font-poppins text-3xl font-bold text-text-primary">7</p>
+          <p class="font-inter text-xs text-text-muted mt-1">Categories</p>
+          <div class="stat-bar w-12 mx-auto mt-2"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FEATURE PAGES ===================== -->
+  <section class="relative z-10 px-6 pb-20">
+    <div class="max-w-6xl mx-auto">
+
+      <div class="text-center mb-12">
+        <h2 class="font-poppins text-3xl md:text-4xl font-bold text-text-primary mb-4">Portal Modules</h2>
+        <p class="font-inter text-text-secondary max-w-xl mx-auto">Access each module of the e-commerce admin system. Each page is fully responsive and optimized for all devices.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Login Page -->
+        <div class="page-card rounded-2xl p-6 cursor-pointer group" onclick="window.location.href='login.html'">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5" style="background:linear-gradient(135deg,rgba(223,107,51,0.2),rgba(223,107,51,0.05));">
+            <i data-lucide="log-in" class="w-7 h-7" style="color:#DF6B33;"></i>
+          </div>
+          <div class="flex items-center gap-2 mb-2">
+            <h3 class="font-poppins font-bold text-lg text-text-primary">Authentication</h3>
+            <span class="font-inter text-xs px-2 py-0.5 rounded-full bg-primary/15 text-primary">login.html</span>
+          </div>
+          <p class="font-inter text-sm text-text-secondary mb-4 leading-relaxed">Secure login with email & password, social authentication options (Google, GitHub, Facebook), remember me, and forgot password recovery flow.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Email Validation</span>
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Password Strength</span>
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Dark Theme</span>
+          </div>
+          <div class="flex items-center gap-1 text-primary font-inter text-sm font-medium">
+            <span>Open Login</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+          </div>
+        </div>
+
+        <!-- Register Page -->
+        <div class="page-card rounded-2xl p-6 cursor-pointer group" onclick="window.location.href='register.html'">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5" style="background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(139,92,246,0.05));">
+            <i data-lucide="user-plus" class="w-7 h-7" style="color:#8B5CF6;"></i>
+          </div>
+          <div class="flex items-center gap-2 mb-2">
+            <h3 class="font-poppins font-bold text-lg text-text-primary">Registration</h3>
+            <span class="font-inter text-xs px-2 py-0.5 rounded-full bg-violet-500/15 text-violet-400">register.html</span>
+          </div>
+          <p class="font-inter text-sm text-text-secondary mb-4 leading-relaxed">Full profile registration with real-time validation, password strength meter, confirm password matching, gender selection, and terms acceptance.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Full Name</span>
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Phone</span>
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Address</span>
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Strength Meter</span>
+          </div>
+          <div class="flex items-center gap-1 text-violet-400 font-inter text-sm font-medium">
+            <span>Open Register</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+          </div>
+        </div>
+
+        <!-- Charts Dashboard -->
+        <div class="page-card rounded-2xl p-6 cursor-pointer group" onclick="window.location.href='charts.html'">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5" style="background:linear-gradient(135deg,rgba(6,182,212,0.2),rgba(6,182,212,0.05));">
+            <i data-lucide="bar-chart-3" class="w-7 h-7 text-cyan-400"></i>
+          </div>
+          <div class="flex items-center gap-2 mb-2">
+            <h3 class="font-poppins font-bold text-lg text-text-primary">Analytics Dashboard</h3>
+            <span class="font-inter text-xs px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-400">charts.html</span>
+          </div>
+          <p class="font-inter text-sm text-text-secondary mb-4 leading-relaxed">Comprehensive e-commerce analytics with 5 tabs: Sales Revenue, Business Results, Marketing, Sales Rankings, and Geographic performance — powered by Chart.js.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Sales Revenue</span>
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Business KPIs</span>
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Marketing</span>
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Rankings</span>
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Geography</span>
+          </div>
+          <div class="flex items-center gap-1 text-cyan-400 font-inter text-sm font-medium">
+            <span>Open Dashboard</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+          </div>
+        </div>
+
+        <!-- Products Page -->
+        <div class="page-card rounded-2xl p-6 cursor-pointer group" onclick="window.location.href='products.html'">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5" style="background:linear-gradient(135deg,rgba(34,197,94,0.2),rgba(34,197,94,0.05));">
+            <i data-lucide="package" class="w-7 h-7" style="color:#22C55E;"></i>
+          </div>
+          <div class="flex items-center gap-2 mb-2">
+            <h3 class="font-poppins font-bold text-lg text-text-primary">Product Catalog</h3>
+            <span class="font-inter text-xs px-2 py-0.5 rounded-full bg-green-500/15 text-green-400">products.html</span>
+          </div>
+          <p class="font-inter text-sm text-text-secondary mb-4 leading-relaxed">Full product catalog with search, category filters, stock status, ratings, and pricing — featuring 24 mock products across 7 categories.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Search</span>
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Category Filter</span>
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Stock Status</span>
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Ratings</span>
+          </div>
+          <div class="flex items-center gap-1 text-green-400 font-inter text-sm font-medium">
+            <span>Open Products</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+          </div>
+        </div>
+
+        <!-- About Page -->
+        <div class="page-card rounded-2xl p-6 cursor-pointer group" onclick="window.location.href='about.html'">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5" style="background:linear-gradient(135deg,rgba(251,191,36,0.2),rgba(251,191,36,0.05));">
+            <i data-lucide="info" class="w-7 h-7" style="color:#FBBF24;"></i>
+          </div>
+          <div class="flex items-center gap-2 mb-2">
+            <h3 class="font-poppins font-bold text-lg text-text-primary">About Us</h3>
+            <span class="font-inter text-xs px-2 py-0.5 rounded-full" style="background:rgba(251,191,36,0.15);color:#FBBF24;">about.html</span>
+          </div>
+          <p class="font-inter text-sm text-text-secondary mb-4 leading-relaxed">Learn about our team, core values, company story, milestones, and the vision behind the E-Commerce Portal platform.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Our Story</span>
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Team Profiles</span>
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Core Values</span>
+          </div>
+          <div class="flex items-center gap-1 font-inter text-sm font-medium" style="color:#FBBF24;">
+            <span>Learn More</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+          </div>
+        </div>
+
+        <!-- Contact Page -->
+        <div class="page-card rounded-2xl p-6 cursor-pointer group" onclick="window.location.href='contact.html'">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5" style="background:linear-gradient(135deg,rgba(239,68,68,0.2),rgba(239,68,68,0.05));">
+            <i data-lucide="mail" class="w-7 h-7" style="color:#EF4444;"></i>
+          </div>
+          <div class="flex items-center gap-2 mb-2">
+            <h3 class="font-poppins font-bold text-lg text-text-primary">Contact</h3>
+            <span class="font-inter text-xs px-2 py-0.5 rounded-full" style="background:rgba(239,68,68,0.15);color:#EF4444;">contact.html</span>
+          </div>
+          <p class="font-inter text-sm text-text-secondary mb-4 leading-relaxed">Get in touch with our team. Send a message, find our office location, browse FAQs, and connect on social media.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Contact Form</span>
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">Office Map</span>
+            <span class="font-inter text-xs px-2 py-1 rounded-lg bg-white/5 text-text-muted">FAQ</span>
+          </div>
+          <div class="flex items-center gap-1 font-inter text-sm font-medium" style="color:#EF4444;">
+            <span>Contact Us</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FEATURES GRID ===================== -->
+  <section class="relative z-10 px-6 pb-20">
+    <div class="max-w-6xl mx-auto">
+
+      <div class="text-center mb-12">
+        <h2 class="font-poppins text-3xl md:text-4xl font-bold text-text-primary mb-4">Dashboard Highlights</h2>
+        <p class="font-inter text-text-secondary max-w-xl mx-auto">Every tab is packed with actionable insights, interactive charts, and sortable data tables.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+        <div class="glass-card rounded-2xl p-5">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(223,107,51,0.15);">
+              <i data-lucide="trending-up" class="w-5 h-5" style="color:#DF6B33;"></i>
+            </div>
+            <h4 class="font-poppins font-bold text-sm text-text-primary">Sales Revenue</h4>
+          </div>
+          <ul class="space-y-2">
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Revenue & target bar chart</li>
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Category doughnut breakdown</li>
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> 30-day sales trend area</li>
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Top products & orders table</li>
+          </ul>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-green-500/15">
+              <i data-lucide="briefcase" class="w-5 h-5 text-green-400"></i>
+            </div>
+            <h4 class="font-poppins font-bold text-sm text-text-primary">Business Results</h4>
+          </div>
+          <ul class="space-y-2">
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Net profit & margin KPIs</li>
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Profit/loss bar + line chart</li>
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Cost breakdown doughnut</li>
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Quarterly KPIs comparison</li>
+          </ul>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-pink-500/15">
+              <i data-lucide="megaphone" class="w-5 h-5 text-pink-400"></i>
+            </div>
+            <h4 class="font-poppins font-bold text-sm text-text-primary">Marketing</h4>
+          </div>
+          <ul class="space-y-2">
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Impressions & clicks metrics</li>
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Marketing performance chart</li>
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Traffic sources breakdown</li>
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Active campaigns with ROAS</li>
+          </ul>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-yellow-500/15">
+              <i data-lucide="trophy" class="w-5 h-5 text-yellow-400"></i>
+            </div>
+            <h4 class="font-poppins font-bold text-sm text-text-primary">Sales Rankings</h4>
+          </div>
+          <ul class="space-y-2">
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Top 10 rep leaderboard</li>
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Gold/Silver/Bronze podium</li>
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Achievement % badges</li>
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Search & sort filters</li>
+          </ul>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-cyan-500/15">
+              <i data-lucide="globe" class="w-5 h-5 text-cyan-400"></i>
+            </div>
+            <h4 class="font-poppins font-bold text-sm text-text-primary">Geography</h4>
+          </div>
+          <ul class="space-y-2">
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Revenue by region horizontal bar</li>
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Top 10 countries vertical bar</li>
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> QoQ growth grouped chart</li>
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Regional performance table</li>
+          </ul>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-violet-500/15">
+              <i data-lucide="cpu" class="w-5 h-5 text-violet-400"></i>
+            </div>
+            <h4 class="font-poppins font-bold text-sm text-text-primary">Tech Stack</h4>
+          </div>
+          <ul class="space-y-2">
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Chart.js 4.4 for all charts</li>
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Tailwind CSS responsive</li>
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Lucide icon library</li>
+            <li class="flex items-center gap-2 font-inter text-xs text-text-secondary"><i data-lucide="check" class="w-3.5 h-3.5 text-green-400"></i> Google Fonts (Poppins + Inter)</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CTA BANNER ===================== -->
+  <section class="relative z-10 px-6 pb-20">
+    <div class="max-w-4xl mx-auto">
+      <div class="rounded-2xl p-8 md:p-12 text-center relative overflow-hidden" style="background:linear-gradient(135deg,rgba(223,107,51,0.15),rgba(196,90,38,0.1)); border:1px solid rgba(223,107,51,0.25);">
+        <div class="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10" style="background:radial-gradient(circle,#DF6B33,transparent 70%); filter:blur(40px);"></div>
+        <div class="absolute bottom-0 left-0 w-40 h-40 rounded-full opacity-10" style="background:radial-gradient(circle,#8B5CF6,transparent 70%); filter:blur(40px);"></div>
+        <div class="relative z-10">
+          <h2 class="font-poppins text-2xl md:text-3xl font-bold text-text-primary mb-3">Ready to explore the dashboard?</h2>
+          <p class="font-inter text-text-secondary mb-8 max-w-md mx-auto">Sign in to access the full analytics portal with all 5 tabs, interactive charts, and real-time data visualizations.</p>
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="login.html" class="glow-btn font-inter text-base font-semibold text-white px-8 py-4 rounded-xl flex items-center gap-2">
+              <i data-lucide="log-in" class="w-5 h-5"></i>
+              Sign In Now
+            </a>
+            <a href="charts.html" class="font-inter text-base font-medium text-text-secondary border border-[#1E2035] px-8 py-4 rounded-xl hover:border-primary hover:text-primary transition-all flex items-center gap-2">
+              <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+              Preview Dashboard
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="relative z-10 border-t border-[#1E2035] px-6 py-8">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#DF6B33,#C45A26);">
+          <i data-lucide="shopping-bag" class="w-4 h-4 text-white"></i>
+        </div>
+        <span class="font-poppins font-bold text-sm text-text-primary">E-Commerce Portal</span>
+      </div>
+      <p class="font-inter text-xs text-text-muted">E-Commerce Admin Dashboard System — All pages use Chart.js, Tailwind CSS, and Lucide Icons.</p>
+      <div class="flex items-center gap-4">
+        <a href="login.html" class="font-inter text-xs text-text-muted hover:text-primary transition-colors">Sign In</a>
+        <a href="register.html" class="font-inter text-xs text-text-muted hover:text-primary transition-colors">Register</a>
+        <a href="charts.html" class="font-inter text-xs text-text-muted hover:text-primary transition-colors">Dashboard</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
