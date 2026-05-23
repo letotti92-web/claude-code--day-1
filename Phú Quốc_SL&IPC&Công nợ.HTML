@@ -337,7 +337,7 @@ body::after{content:'';position:fixed;inset:0;background:url('./View Nui Ong Qua
       <div class="ico"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="ccBg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#1e3a8a"/><stop offset="100%" stop-color="#0f172a"/></radialGradient></defs><circle cx="50" cy="50" r="48" fill="url(#ccBg)"/><ellipse cx="2" cy="50" rx="7" ry="14" fill="#fff"/><ellipse cx="98" cy="50" rx="7" ry="14" fill="#fff"/><circle cx="50" cy="50" r="15" fill="#ea580c"/><circle cx="50" cy="50" r="15" fill="none" stroke="#fff" stroke-width="2"/></svg></div>
       <div>
         <h1>BÁO CÁO SẢN LƯỢNG &amp; CÔNG NỢ <span class="live">⚡ LIVE</span></h1>
-        <div class="sub">Khu vực Phú Quốc — Sun Group × Ccons | Tuần 19/2026 — 08/05/2026</div>
+        <div class="sub" id="hdrSub">Khu vực Phú Quốc — Sun Group × Ccons | Tuần 19/2026 — 08/05/2026</div>
       </div>
     </div>
     <div class="meta">
@@ -380,13 +380,13 @@ body::after{content:'';position:fixed;inset:0;background:url('./View Nui Ong Qua
   <div class="b-ico">🏗️</div>
   <div class="b-body">
     <div class="b-title">BÁO CÁO SẢN LƯỢNG</div>
-    <div class="b-sub">Khối lượng đã thi công vs Giá trị hợp đồng — đến hết Tuần 19/2026</div>
+    <div class="b-sub" id="bsSubWeek">Khối lượng đã thi công vs Giá trị hợp đồng — đến hết Tuần 19/2026</div>
   </div>
   <div class="b-stats">
     <div>HĐ+PL<b id="bsHD">1.687,7t</b></div>
     <div>SL Lũy kế<b id="bsSL">1.119,3t</b></div>
     <div>Tỷ lệ<b id="bsPCT">66,3%</b></div>
-    <div>Tuần 19<b id="bsT19">20,4t</b></div>
+    <div><span id="lblBsT">Tuần 19</span><b id="bsT19">20,4t</b></div>
   </div>
 </div>
 
@@ -398,10 +398,10 @@ body::after{content:'';position:fixed;inset:0;background:url('./View Nui Ong Qua
     <div class="val" id="kSL">0<span class="u">tỷ</span></div>
     <div class="trk"><div id="trkSL" style="width:0%;background:linear-gradient(90deg,#10b981,#34d399)"></div></div>
     <div class="sub-lbl">Còn <b id="slConL">0t</b> chưa thi công</div></div>
-  <div class="kpi k3"><div class="top"><div class="lbl">SL 2026 YTD</div><div class="badge">+T19</div></div>
+  <div class="kpi k3"><div class="top"><div class="lbl">SL 2026 YTD</div><div class="badge" id="badgeSL2026">+T19</div></div>
     <div class="val" id="kSL2026">0<span class="u">tỷ</span></div>
-    <div class="sub-lbl">Đầu năm — đến hết tuần 19</div></div>
-  <div class="kpi k4"><div class="top"><div class="lbl">SL Tuần 19</div><div class="badge">tuần này</div></div>
+    <div class="sub-lbl" id="subSL2026">Đầu năm — đến hết tuần 19</div></div>
+  <div class="kpi k4"><div class="top"><div class="lbl" id="lblSLW">SL Tuần 19</div><div class="badge">tuần này</div></div>
     <div class="val" id="kSLW">0<span class="u">tỷ</span></div>
     <div class="sub-lbl">Phát sinh tuần báo cáo</div></div>
 </div>
@@ -546,6 +546,23 @@ if(window.ChartDataLabels) Chart.register(ChartDataLabels);
 let mainChart = null;
 let curProject = 'all', curContract = 'all';
 
+function weekInfo(){
+  const w=(DATA&&DATA.reportWeek)?DATA.reportWeek:19;
+  const y=(DATA&&DATA.reportYear)?DATA.reportYear:2026;
+  const d=(DATA&&DATA.reportDate)?DATA.reportDate:'';
+  return {w:w, prev:w-1, y:y, d:d};
+}
+function updateWeekLabels(){
+  const wi=weekInfo();
+  const set=function(id,txt){const el=document.getElementById(id); if(el) el.textContent=txt;};
+  set('hdrSub','Khu vực Phú Quốc — Sun Group × Ccons | Tuần '+wi.w+'/'+wi.y+(wi.d?' — '+wi.d:''));
+  set('bsSubWeek','Khối lượng đã thi công vs Giá trị hợp đồng — đến hết Tuần '+wi.w+'/'+wi.y);
+  set('lblBsT','Tuần '+wi.w);
+  set('badgeSL2026','+T'+wi.w);
+  set('subSL2026','Đầu năm — đến hết tuần '+wi.w);
+  set('lblSLW','SL Tuần '+wi.w);
+}
+
 const LKHS_FB = {'I':214659327371.84,'II':96380021440,'III':8062006467,'V':308193815097,'VI':36199339260,'VII':192502360013};
 function claimVal(it){
   if(it.lkhs === 0) return 0;
@@ -633,6 +650,7 @@ function getView(){
 }
 
 function renderAll(){
+  updateWeekLabels();
   const view = getView();
   const T = view.total, CT = view.cn_total;
   
@@ -965,6 +983,41 @@ function parseWorkbook(wb){
     }
   }
 
+  // === Tu dong nhan dien TUAN BAO CAO tu header sheet 0.0 ===
+  let reportWeek=null, reportYear=null, reportDate=null, _bestDateNum=-1;
+  for(let i=0;i<Math.min(slR.length,12);i++){
+    const r=slR[i]||[];
+    for(let c=0;c<r.length;c++){
+      const cell=r[c];
+      if(cell==null) continue;
+      if(cell instanceof Date && !isNaN(cell)){
+        const num=cell.getFullYear()*10000+(cell.getMonth()+1)*100+cell.getDate();
+        if(num>_bestDateNum){_bestDateNum=num;
+          reportDate=String(cell.getDate()).padStart(2,'0')+'/'+String(cell.getMonth()+1).padStart(2,'0')+'/'+cell.getFullYear();}
+        continue;
+      }
+      const v=String(cell);
+      const up=v.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      const wm=up.match(/TUAN\s*0*(\d{1,2})/g);
+      if(wm) wm.forEach(function(seg){
+        const n=+seg.replace(/\D/g,'');
+        if(n>=1 && n<=53 && (reportWeek===null||n>reportWeek)) reportWeek=n;
+      });
+      const ym=up.match(/\b20\d{2}\b/g);
+      if(ym) ym.forEach(function(y){const yy=+y; if(reportYear===null||yy>reportYear) reportYear=yy;});
+      const dm=v.match(/(\d{1,2})[\/.\-](\d{1,2})[\/.\-](20\d{2})/);
+      if(dm){
+        const dd=+dm[1], mm=+dm[2], yy=+dm[3];
+        if(dd>=1&&dd<=31&&mm>=1&&mm<=12){
+          const num=yy*10000+mm*100+dd;
+          if(num>_bestDateNum){_bestDateNum=num;
+            reportDate=String(dd).padStart(2,'0')+'/'+String(mm).padStart(2,'0')+'/'+yy;}
+        }
+      }
+    }
+  }
+  if(reportWeek!==null) console.log('Tuan bao cao:',reportWeek,'/',reportYear,reportDate);
+
   const ROMAN=['I','II','III','IV','V','VI','VII','VIII','IX','X'];
   const slP=[]; let cur=null;
   for(let i=0;i<slR.length;i++){
@@ -1018,7 +1071,7 @@ function parseWorkbook(wb){
     for(const k in slTot) slTot[k]+=p[k]||0;
   });
   cnT.lkhs = merged.reduce(function(s,p){return s+(p.lkhs||0);}, 0);
-  return {projects:merged, sl_total:slTot, cn_total:cnT};
+  return {projects:merged, sl_total:slTot, cn_total:cnT, reportWeek:reportWeek, reportYear:reportYear, reportDate:reportDate};
 }
 
 function syncGSheet(silent){
